@@ -1,0 +1,127 @@
+{
+  "updated_at": "2026-06-05",
+  "version": "1.0",
+  "formula_version": "1.0",
+  "models": {
+    "kokoro": {
+      "hutash_score": 9.0,
+      "benchmark": {
+        "metric": "UTMOS",
+        "raw_score": 4.5,
+        "normalized": 9.0,
+        "scale": "0-10 (UTMOS×2)",
+        "source": "Trelis Research Tricky TTS 2026",
+        "source_url": "https://trelis.substack.com/p/top-text-to-speech-tts-models-in"
+      },
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "parler-tts-mini-1.1": {
+      "hutash_score": 7.6,
+      "benchmark": {
+        "metric": "UTMOS",
+        "raw_score": 3.8,
+        "normalized": 7.6,
+        "scale": "0-10 (UTMOS×2)",
+        "source": "HuggingFace model card community consensus",
+        "source_url": "https://huggingface.co/parler-tts/parler-tts-mini-v1.1"
+      },
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "chatterbox": {
+      "hutash_score": 8.2,
+      "benchmark": {
+        "metric": "UTMOS",
+        "raw_score": 4.1,
+        "normalized": 8.2,
+        "scale": "0-10 (UTMOS×2)",
+        "source": "Resemble AI / BentoML benchmark vs ElevenLabs",
+        "source_url": "https://www.bentoml.com/blog/exploring-the-world-of-open-source-text-to-speech-models"
+      },
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "dia-1.6b": {
+      "hutash_score": 8.0,
+      "benchmark": {
+        "metric": "UTMOS",
+        "raw_score": 4.0,
+        "normalized": 8.0,
+        "scale": "0-10 (UTMOS×2)",
+        "source": "Inferless TTS comparison 2025",
+        "source_url": "https://www.inferless.com/learn/comparing-different-text-to-speech---tts--models-part-2"
+      },
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "whisper-large-v3": {
+      "hutash_score": 9.7,
+      "benchmark": {
+        "metric": "WER",
+        "raw_score": 2.7,
+        "normalized": 9.73,
+        "scale": "0-10 ((100-WER)/10)",
+        "source": "OpenAI Whisper paper, LibriSpeech clean test",
+        "source_url": "https://arxiv.org/abs/2212.04356"
+      },
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "distil-whisper-large-v3": {
+      "hutash_score": 9.6,
+      "benchmark": {
+        "metric": "WER",
+        "raw_score": 2.85,
+        "normalized": 9.72,
+        "scale": "0-10 ((100-WER)/10)",
+        "source": "Distil-Whisper paper — within 1% of large-v3",
+        "source_url": "https://huggingface.co/distil-whisper/distil-large-v3"
+      },
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "whisper-tiny": {
+      "hutash_score": 9.4,
+      "benchmark": {
+        "metric": "WER",
+        "raw_score": 5.6,
+        "normalized": 9.44,
+        "scale": "0-10 ((100-WER)/10)",
+        "source": "OpenAI Whisper paper, LibriSpeech clean test",
+        "source_url": "https://arxiv.org/abs/2212.04356"
+      },
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "ace-step-1.5": {
+      "hutash_score": 8.7,
+      "benchmark": {
+        "metric": "SongEval",
+        "raw_score": 4.35,
+        "normalized": 8.7,
+        "scale": "0-10 (SongEval×2)",
+        "source": "ACE-Step 1.5 technical report — outperforms Suno v5",
+        "source_url": "https://ace-step.github.io/ace-step-v1.5.github.io/"
+      },
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "prompt-engine": {
+      "hutash_score": 7.0,
+      "benchmark": null,
+      "note": "Qwen3 1.7B (Q8_0 GGUF, CPU-only) — general-purpose LLM, no longer an internal-only tool. Scores are engineering estimates from the model's specs (1.7B parameters, INT8 quantization, CPU inference via llama.cpp) rather than a formal benchmark run — replace with real numbers if Qwen publishes official MMLU/benchmark results for this checkpoint.",
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    }
+  }
+}
