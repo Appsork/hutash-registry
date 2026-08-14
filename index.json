@@ -248,7 +248,7 @@
       "hutash": "pipelines/qwen3-1.7b.hutash",
       "name": "Qwen3 1.7B",
       "description": "General-purpose 1.7B parameter language model (GGUF).",
-      "version": "1.0.9",
+      "version": "1.0.10",
       "license": "Apache-2.0",
       "min_vram_gb": 3,
       "disk_size_gb": 1.83,
