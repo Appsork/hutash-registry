@@ -195,6 +195,30 @@
       "weights_external": true
     },
     {
+      "id": "gemma4-e4b",
+      "type": "pipeline",
+      "category": "LLM",
+      "hutash": "pipelines/gemma4-e4b.hutash",
+      "name": "Gemma 4 E4B",
+      "description": "General-purpose 4B parameter language model (GGUF) with native tool calling.",
+      "version": "1.0.0",
+      "license": "Apache-2.0",
+      "min_vram_gb": 5.0,
+      "disk_size_gb": 4.98,
+      "quality_score": 0.88,
+      "speed": null,
+      "modality": "llm",
+      "hardware_label": "CPU",
+      "internal": false,
+      "hf_repo": "unsloth/gemma-4-E4B-it-GGUF",
+      "hf_revision": "bfc15c382204943c3a8fff0c750b94ae2364d7a3",
+      "allow_patterns": [
+        "gemma-4-E4B-it-Q4_K_M.gguf"
+      ],
+      "weights_external": true,
+      "low_vram_capable": true
+    },
+    {
       "id": "kokoro",
       "type": "pipeline",
       "category": "audio",
@@ -266,6 +290,30 @@
       "low_vram_capable": true
     },
     {
+      "id": "qwen3.5-4b",
+      "type": "pipeline",
+      "category": "LLM",
+      "hutash": "pipelines/qwen3.5-4b.hutash",
+      "name": "Qwen3.5 4B",
+      "description": "General-purpose 4B parameter language model (GGUF) with native tool calling.",
+      "version": "1.0.0",
+      "license": "Apache-2.0",
+      "min_vram_gb": 4.0,
+      "disk_size_gb": 2.74,
+      "quality_score": 0.9,
+      "speed": null,
+      "modality": "llm",
+      "hardware_label": "CPU",
+      "internal": false,
+      "hf_repo": "unsloth/Qwen3.5-4B-GGUF",
+      "hf_revision": "e87f176479d0855a907a41277aca2f8ee7a09523",
+      "allow_patterns": [
+        "Qwen3.5-4B-Q4_K_M.gguf"
+      ],
+      "weights_external": true,
+      "low_vram_capable": true
+    },
+    {
       "id": "whisper-large-v3",
       "type": "pipeline",
       "category": "audio",
@@ -322,7 +370,7 @@
       "speed": null,
       "modality": "",
       "hardware_label": "CPU",
-      "internal": false,
+      "internal": true,
       "hf_repo": null,
       "hf_revision": null,
       "allow_patterns": null,
