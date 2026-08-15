@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-05",
+  "updated_at": "2026-08-15",
   "version": "1.0",
   "formula_version": "1.0",
   "models": {
@@ -115,10 +115,26 @@
       "user_score": null,
       "user_count": 0
     },
-    "prompt-engine": {
+    "qwen3-1.7b": {
       "hutash_score": 7.0,
       "benchmark": null,
       "note": "Qwen3 1.7B (Q8_0 GGUF, CPU-only) — general-purpose LLM, no longer an internal-only tool. Scores are engineering estimates from the model's specs (1.7B parameters, INT8 quantization, CPU inference via llama.cpp) rather than a formal benchmark run — replace with real numbers if Qwen publishes official MMLU/benchmark results for this checkpoint.",
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "gemma4-e4b": {
+      "hutash_score": 7.8,
+      "benchmark": null,
+      "note": "Gemma 4 E4B (GGUF, native tool calling) — general-purpose ~4B-effective-parameter LLM. Live web research (Aug 2026) could not produce a benchmark number reliable enough to cite: two sources gave conflicting MMLU-Pro figures for this checkpoint (69.4% per the huggingface.co/google/gemma-4-E4B-it model card vs. 77.2% per third-party blog aggregation), and a fetched arXiv 'technical report' in the same research pass misattributed Gemma to an unrelated company entirely instead of its real publisher, Google DeepMind — a clear fabrication that undermines confidence in the rest of that source. hutash_score is an engineering estimate only (newer model generation and larger effective parameter count than qwen3-1.7b, same reasoning as that entry's own estimate) — replace with a real number once Google's own official benchmark table can be verified against a primary source.",
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "qwen3.5-4b": {
+      "hutash_score": 8.0,
+      "benchmark": null,
+      "note": "Qwen3.5 4B (GGUF, native tool calling) — general-purpose 4B parameter LLM. Live web research (Aug 2026) surfaced an MMLU-Pro figure of 79.1% from a fetched huggingface.co/Qwen/Qwen3.5-4B model card — unusually high for a 4B model and gathered in the same research pass that produced a confirmed fabrication for the companion gemma4-e4b entry (see its note), so it is not cited here without independent confirmation. hutash_score is an engineering estimate only (newer model generation and larger parameter count than qwen3-1.7b, same reasoning as that entry's own estimate) — replace with a real number once Alibaba's own official benchmark table can be verified against a primary source.",
       "hf_likes": null,
       "user_score": null,
       "user_count": 0
