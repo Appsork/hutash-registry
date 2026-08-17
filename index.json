@@ -338,7 +338,7 @@
       "hutash": "pipelines/madlad400-3b.hutash",
       "name": "MADLAD-400 3B",
       "description": "T5-based document translation across 400+ languages.",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "license": "Apache-2.0",
       "min_vram_gb": 8.0,
       "disk_size_gb": 12.0,
