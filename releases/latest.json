@@ -1,11 +1,11 @@
 {
-    "version":  "1.0.7",
+    "version":  "1.0.0",
     "notes":  "Release notes here",
-    "pub_date":  "2026-08-17T22:14:08Z",
+    "pub_date":  "2026-08-17T23:11:20Z",
     "platforms":  {
                       "windows-x86_64":  {
-                                             "url":  "https://github.com/Appsork/hutash-registry/releases/download/v1.0.7/Hutash.OS_1.0.7_x64-setup.exe",
-                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTazlOZ0FUVUswdXdsRkVpNTNlU0JFWG94cGM4MUp2U2liMG5LZ0Rkekp0QlZBa2Vtb0k3bExIeGpKNHRrdkIrbjU2QUNOTThnK3I2b0tOZGxrV0w5enN2WE1uNklKTndvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg3MDA0ODQ4CWZpbGU6SHV0YXNoIE9TXzEuMC43X3g2NC1zZXR1cC5leGUKTnZ5UWZBQVIrNXc2aWFNUUh0KzlMamlDTXpLNFgxQVZrK0RsV2pNL1p6MTRiRWg0ek1rWEtlT3BaVTk0VnRCbnNvZkRZVDFRNFkzeVRKZEkxT1lsQVE9PQo="
+                                             "url":  "https://github.com/Appsork/hutash-registry/releases/download/v1.0.0/Hutash.OS_1.0.0_x64-setup.exe",
+                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTazlOZ0FUVUswdTFCREpqYXRsd25zbmh1OS81QW9DQmpoTldsU0FRZWNOV3dZRUhNSEN0cWFDTitNaENLaUdvbHpPNFpGeFpyd0dFby9aejlNSFBMRWVDRDBPdUNxR2d3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg3MDA4MjgwCWZpbGU6SHV0YXNoIE9TXzEuMC4wX3g2NC1zZXR1cC5leGUKL2tJMEZtcm1lZGZOVjduMEIrU0c0blZNUDFzRmtEZzhZZml5MHo2bEhXNmtYODU4V1FSMGFVcFpRdjdodDJDZ3VaL3V3Mzcwc0FJbENBaHhkcWZjQ2c9PQo="
                                          }
                   }
 }
