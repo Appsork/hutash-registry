@@ -386,7 +386,7 @@
       "hutash": "pipelines/svara-tts.hutash",
       "name": "Svara TTS",
       "description": "Multilingual TTS for 19 Indian languages + Indian English, with emotion/style control.",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "license": "Apache-2.0",
       "min_vram_gb": 8.0,
       "disk_size_gb": 13.3,
