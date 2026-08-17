@@ -138,6 +138,38 @@
       "hf_likes": null,
       "user_score": null,
       "user_count": 0
+    },
+    "indicconformer-600m": {
+      "hutash_score": 8.3,
+      "benchmark": null,
+      "note": "IndicConformer 600M (AI4Bharat, hybrid CTC/RNNT, 22 Indian languages) — engineering estimate, not a formal benchmark run. Scored relative to this catalogue's existing STT entries (whisper-large-v3 9.7, distil-whisper-large-v3 9.6, whisper-tiny 9.4 — all scored against English-centric WER benchmarks that don't cover Indian-language accuracy at all) rather than against those numbers directly: AI4Bharat's own IndicConformer technical reports claim competitive WER against Whisper on Indian-language test sets specifically, but no single normalized-scale (0-10, WER-derived) figure comparable to the Whisper entries' own methodology could be sourced and verified live for this exact 600M checkpoint. Replace with a real WER-normalized score once AI4Bharat publishes (or this checkpoint is benchmarked against) a directly comparable Indian-language test set figure.",
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "indic-parler-tts": {
+      "hutash_score": 7.4,
+      "benchmark": null,
+      "note": "Indic Parler-TTS (AI4Bharat fine-tune of Parler-TTS, 17 Indian languages + English) — engineering estimate, not a formal benchmark run. Scored just below parler-tts-mini-1.1 (7.6, itself a UTMOS-based community-consensus estimate, not a raw model benchmark) on the reasoning that a multilingual fine-tune spread across 18 languages typically trades a little per-language quality for breadth relative to the English-only base checkpoint it derives from, absent a directly comparable UTMOS figure for the Indic-language checkpoint itself. Replace with a real benchmark score once a UTMOS or equivalent MOS figure specific to this checkpoint's Indian-language output can be sourced and verified.",
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "indictrans2-1b": {
+      "hutash_score": 8.6,
+      "benchmark": null,
+      "note": "IndicTrans2 1B (AI4Bharat, English ↔ 22 Indian languages) — engineering estimate, not a formal benchmark run. AI4Bharat's own published BLEU/chrF++ figures on the IN22-Gen/IN22-Conv benchmarks describe the full IndicTrans2 model family, not isolated to this exact 1B En-Indic checkpoint, and are not on the 0-10 normalized scale the rest of this catalogue uses, so no single comparable number could be sourced and verified live. Scored as the catalogue's first dedicated translation model — first-party AI4Bharat research release, purpose-built and evaluated specifically for Indian-language translation (unlike MADLAD-400's broad 400+-language generalist scope) — rather than against any of the STT/TTS entries' own unrelated metrics. Replace with a real normalized score once a directly comparable IN22 figure for this specific checkpoint can be verified against a primary source.",
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
+    "madlad400-3b": {
+      "hutash_score": 8.1,
+      "benchmark": null,
+      "note": "MADLAD-400 3B-MT (Google, 400+ languages) — engineering estimate, not a formal benchmark run. Google's own MADLAD-400 paper reports per-language-group chrF scores across its 400+-language sweep rather than one aggregate figure comparable to this catalogue's 0-10 normalized scale, and no single verified number could be sourced live for this exact 3B-MT checkpoint. Scored slightly below indictrans2-1b on the reasoning that a 400+-language generalist typically trades some per-language accuracy for breadth relative to a 22-language specialist model, same reasoning pattern as indic-parler-tts's own estimate versus parler-tts-mini-1.1. Replace with a real normalized score once a directly comparable primary-source figure for this checkpoint can be verified.",
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
     }
   }
 }

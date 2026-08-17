@@ -263,6 +263,28 @@
       "low_vram_capable": false
     },
     {
+      "id": "indictrans2-1b",
+      "type": "pipeline",
+      "category": "text",
+      "hutash": "pipelines/indictrans2-1b.hutash",
+      "name": "IndicTrans2 1B",
+      "description": "English to 22 Indian languages document translation, preserving .srt timestamps.",
+      "version": "1.0.0",
+      "license": "MIT",
+      "min_vram_gb": 6.0,
+      "disk_size_gb": 8.9,
+      "quality_score": 0.88,
+      "speed": null,
+      "modality": "translate",
+      "hardware_label": "GPU (6GB+)",
+      "internal": false,
+      "hf_repo": "ai4bharat/indictrans2-en-indic-1B",
+      "hf_revision": "10e65a9951a1e922cd109a95e8aba9357b62144b",
+      "allow_patterns": null,
+      "weights_external": true,
+      "low_vram_capable": false
+    },
+    {
       "id": "kokoro",
       "type": "pipeline",
       "category": "audio",
@@ -286,6 +308,28 @@
         "voices/*.pt"
       ],
       "weights_external": true
+    },
+    {
+      "id": "madlad400-3b",
+      "type": "pipeline",
+      "category": "text",
+      "hutash": "pipelines/madlad400-3b.hutash",
+      "name": "MADLAD-400 3B",
+      "description": "T5-based document translation across 400+ languages.",
+      "version": "1.0.0",
+      "license": "Apache-2.0",
+      "min_vram_gb": 8.0,
+      "disk_size_gb": 12.0,
+      "quality_score": 0.86,
+      "speed": null,
+      "modality": "translate",
+      "hardware_label": "GPU (8GB+)",
+      "internal": false,
+      "hf_repo": "google/madlad400-3b-mt",
+      "hf_revision": "fa184c675da0b5c9e1c8694fccd4e12e2d422094",
+      "allow_patterns": null,
+      "weights_external": true,
+      "low_vram_capable": false
     },
     {
       "id": "parler-tts-mini-1.1",
