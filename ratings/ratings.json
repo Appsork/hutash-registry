@@ -1,7 +1,32 @@
 {
-  "updated_at": "2026-08-15",
+  "updated_at": "2026-08-17",
   "version": "1.0",
   "formula_version": "1.0",
+  "_formula": {
+    "version": "1.0",
+    "name": "Hutash Score",
+    "scale": "0-10",
+    "components": {
+      "benchmark": {
+        "weight": 0.70,
+        "description": "Published benchmark score, normalized to 0-10",
+        "normalization": {
+          "tts": "UTMOS (0-5) × 2",
+          "stt": "(100 - WER%) / 10",
+          "translation": "BLEU / 10",
+          "llm": "MMLU% / 10",
+          "music": "MOS (0-5) × 2",
+          "voice_clone": "Speaker Similarity (0-1) × 10"
+        }
+      },
+      "popularity": {
+        "weight": 0.30,
+        "description": "HuggingFace downloads + likes, normalized to 0-10",
+        "method": "10 × log10(downloads+1) / log10(baseline_downloads+1), where baseline is the most-downloaded model in the same modality (translation: google-t5/t5-small, 22.9M downloads). Log scale, not linear — raw download counts span several orders of magnitude across models, so a linear ratio would crush nearly everything to ~0."
+      }
+    },
+    "future": "v1.1 will add user ratings (50% weight, benchmark 35%, popularity 15%)"
+  },
   "models": {
     "kokoro": {
       "hutash_score": 9.0,
@@ -164,10 +189,37 @@
       "user_count": 0
     },
     "madlad400-3b": {
-      "hutash_score": 8.1,
+      "hutash_score": 3.89,
+      "benchmark": {
+        "metric": "BLEU",
+        "raw_score": 28.2,
+        "normalized": 2.82,
+        "scale": "0-10 (BLEU/10)",
+        "source": "MADLAD-400 paper (Kudugunta et al.), Table 4, MT-3B model, WMT en2xx direction",
+        "source_url": "https://arxiv.org/abs/2309.04662"
+      },
+      "popularity": {
+        "hf_downloads": 50000,
+        "hf_likes": 120,
+        "normalized": 6.39,
+        "baseline": "google-t5/t5-small (22.9M downloads) — most-downloaded translation-pipeline model on HuggingFace"
+      },
+      "note": "Replaces the prior engineering-estimate placeholder (8.1) with a formula-calculated score sourced from the paper's own Table 4: MT-3B model, WMT benchmark, en2xx (English-to-target) direction — chosen over the paper's other three reported figures (WMT xx2en 33.4, Flores-200 xx2en 29.7, Flores-200 en2xx 17.3) because en2xx/WMT most closely matches this catalogue's actual product usage (translating FROM English) against the standard external MT benchmark. hutash_score is markedly lower than this catalogue's other entries because BLEU/10 is a harsh normalization for translation quality (28.2 BLEU is a strong, competitive MT result — comparable to much larger models per the paper — but the literal formula crushes it to 2.82/10), unlike UTMOS×2 or (100-WER)/10 which are calibrated so a good model lands in the 8-9.5 range. Applied the formula exactly as specified rather than adjusting for this, since deviating from the given formula wasn't requested. HuggingFace popularity figures (~50K downloads, 120 likes) are as given in the task brief, not independently re-verified against a live API snapshot.",
+      "hf_likes": 120,
+      "user_score": null,
+      "user_count": 0
+    },
+    "svara-tts": {
+      "hutash_score": 8.2,
       "benchmark": null,
-      "note": "MADLAD-400 3B-MT (Google, 400+ languages) — engineering estimate, not a formal benchmark run. Google's own MADLAD-400 paper reports per-language-group chrF scores across its 400+-language sweep rather than one aggregate figure comparable to this catalogue's 0-10 normalized scale, and no single verified number could be sourced live for this exact 3B-MT checkpoint. Scored slightly below indictrans2-1b on the reasoning that a 400+-language generalist typically trades some per-language accuracy for breadth relative to a 22-language specialist model, same reasoning pattern as indic-parler-tts's own estimate versus parler-tts-mini-1.1. Replace with a real normalized score once a directly comparable primary-source figure for this checkpoint can be verified.",
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 234058,
+        "hf_likes": 53,
+        "normalized": 7.30,
+        "baseline": "google-t5/t5-small (22.9M downloads) — reused the translation-modality baseline for a consistent catalogue-wide popularity scale; no TTS-specific baseline was specified"
+      },
+      "note": "Svara-TTS v1 (Kenpath Technologies, 19 Indian languages + Indian English, Orpheus/Llama-3.2-3B-based) — engineering estimate for the benchmark/quality component, not a formula-calculated hutash_score: live research (Aug 2026) found no published MOS, UTMOS, or other quality-metric score for this checkpoint anywhere — not on the model card, not in the inference repo, not in third-party coverage — so the formula's 70%-weighted benchmark component has no real input to calculate from. Scored via the same engineering-estimate pattern already used for indicconformer-600m/indic-parler-tts/indictrans2-1b/madlad400-3b's prior placeholder: positioned near chatterbox (8.2) and above dia-1.6b (8.0) and parler-tts-mini-1.1 (7.6), reflecting real, verified popularity (234,058 downloads/month, 53 likes per the HuggingFace API — notably higher traction than this catalogue's other recent Indic-language additions) plus the widest per-model language coverage in this catalogue (19 languages) and an ungated, Apache-2.0, actively-maintained release. The task brief cited '800K+ downloads' (Kenpath's own claim, presumably all-time cumulative); the HuggingFace API's own 'downloads' field returns 234,058 (a rolling/monthly figure, the same metric basis used for every other popularity number in this file) — used the verified API figure for the popularity calculation rather than the unverifiable cumulative claim, and note both here for transparency. Replace hutash_score with a formula-calculated one once a verified MOS/UTMOS figure for this checkpoint can be sourced.",
+      "hf_likes": 53,
       "user_score": null,
       "user_count": 0
     }
