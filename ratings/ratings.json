@@ -143,6 +143,7 @@
     "qwen3-1.7b": {
       "hutash_score": 7.0,
       "benchmark": null,
+      "source": "engineering estimate",
       "note": "Qwen3 1.7B (Q8_0 GGUF, CPU-only) — general-purpose LLM, no longer an internal-only tool. Scores are engineering estimates from the model's specs (1.7B parameters, INT8 quantization, CPU inference via llama.cpp) rather than a formal benchmark run — replace with real numbers if Qwen publishes official MMLU/benchmark results for this checkpoint.",
       "hf_likes": null,
       "user_score": null,
@@ -151,6 +152,7 @@
     "gemma4-e4b": {
       "hutash_score": 7.8,
       "benchmark": null,
+      "source": "engineering estimate",
       "note": "Gemma 4 E4B (GGUF, native tool calling) — general-purpose ~4B-effective-parameter LLM. Live web research (Aug 2026) could not produce a benchmark number reliable enough to cite: two sources gave conflicting MMLU-Pro figures for this checkpoint (69.4% per the huggingface.co/google/gemma-4-E4B-it model card vs. 77.2% per third-party blog aggregation), and a fetched arXiv 'technical report' in the same research pass misattributed Gemma to an unrelated company entirely instead of its real publisher, Google DeepMind — a clear fabrication that undermines confidence in the rest of that source. hutash_score is an engineering estimate only (newer model generation and larger effective parameter count than qwen3-1.7b, same reasoning as that entry's own estimate) — replace with a real number once Google's own official benchmark table can be verified against a primary source.",
       "hf_likes": null,
       "user_score": null,
@@ -159,6 +161,7 @@
     "qwen3.5-4b": {
       "hutash_score": 8.0,
       "benchmark": null,
+      "source": "engineering estimate",
       "note": "Qwen3.5 4B (GGUF, native tool calling) — general-purpose 4B parameter LLM. Live web research (Aug 2026) surfaced an MMLU-Pro figure of 79.1% from a fetched huggingface.co/Qwen/Qwen3.5-4B model card — unusually high for a 4B model and gathered in the same research pass that produced a confirmed fabrication for the companion gemma4-e4b entry (see its note), so it is not cited here without independent confirmation. hutash_score is an engineering estimate only (newer model generation and larger parameter count than qwen3-1.7b, same reasoning as that entry's own estimate) — replace with a real number once Alibaba's own official benchmark table can be verified against a primary source.",
       "hf_likes": null,
       "user_score": null,
@@ -167,6 +170,7 @@
     "indicconformer-600m": {
       "hutash_score": 8.3,
       "benchmark": null,
+      "source": "engineering estimate",
       "note": "IndicConformer 600M (AI4Bharat, hybrid CTC/RNNT, 22 Indian languages) — engineering estimate, not a formal benchmark run. Scored relative to this catalogue's existing STT entries (whisper-large-v3 9.7, distil-whisper-large-v3 9.6, whisper-tiny 9.4 — all scored against English-centric WER benchmarks that don't cover Indian-language accuracy at all) rather than against those numbers directly: AI4Bharat's own IndicConformer technical reports claim competitive WER against Whisper on Indian-language test sets specifically, but no single normalized-scale (0-10, WER-derived) figure comparable to the Whisper entries' own methodology could be sourced and verified live for this exact 600M checkpoint. Replace with a real WER-normalized score once AI4Bharat publishes (or this checkpoint is benchmarked against) a directly comparable Indian-language test set figure.",
       "hf_likes": null,
       "user_score": null,
@@ -175,6 +179,7 @@
     "indic-parler-tts": {
       "hutash_score": 7.4,
       "benchmark": null,
+      "source": "engineering estimate",
       "note": "Indic Parler-TTS (AI4Bharat fine-tune of Parler-TTS, 17 Indian languages + English) — engineering estimate, not a formal benchmark run. Scored just below parler-tts-mini-1.1 (7.6, itself a UTMOS-based community-consensus estimate, not a raw model benchmark) on the reasoning that a multilingual fine-tune spread across 18 languages typically trades a little per-language quality for breadth relative to the English-only base checkpoint it derives from, absent a directly comparable UTMOS figure for the Indic-language checkpoint itself. Replace with a real benchmark score once a UTMOS or equivalent MOS figure specific to this checkpoint's Indian-language output can be sourced and verified.",
       "hf_likes": null,
       "user_score": null,
@@ -183,6 +188,7 @@
     "indictrans2-1b": {
       "hutash_score": 8.6,
       "benchmark": null,
+      "source": "engineering estimate",
       "note": "IndicTrans2 1B (AI4Bharat, English ↔ 22 Indian languages) — engineering estimate, not a formal benchmark run. AI4Bharat's own published BLEU/chrF++ figures on the IN22-Gen/IN22-Conv benchmarks describe the full IndicTrans2 model family, not isolated to this exact 1B En-Indic checkpoint, and are not on the 0-10 normalized scale the rest of this catalogue uses, so no single comparable number could be sourced and verified live. Scored as the catalogue's first dedicated translation model — first-party AI4Bharat research release, purpose-built and evaluated specifically for Indian-language translation (unlike MADLAD-400's broad 400+-language generalist scope) — rather than against any of the STT/TTS entries' own unrelated metrics. Replace with a real normalized score once a directly comparable IN22 figure for this specific checkpoint can be verified against a primary source.",
       "hf_likes": null,
       "user_score": null,
@@ -212,6 +218,7 @@
     "svara-tts": {
       "hutash_score": 8.2,
       "benchmark": null,
+      "source": "engineering estimate",
       "popularity": {
         "hf_downloads": 234058,
         "hf_likes": 53,
