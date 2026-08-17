@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-17",
+  "updated_at": "2026-08-18",
   "version": "1.0",
   "formula_version": "1.0",
   "_formula": {
@@ -8,19 +8,50 @@
     "scale": "0-10",
     "components": {
       "benchmark": {
-        "weight": 0.70,
-        "description": "Published benchmark score, normalized to 0-10",
+        "weight": 0.7,
+        "description": "Published benchmark score, normalized to 0-10 via min-max scaling within a realistic floor/ceiling for the modality (not simple division)",
         "normalization": {
-          "tts": "UTMOS (0-5) × 2",
-          "stt": "(100 - WER%) / 10",
-          "translation": "BLEU / 10",
-          "llm": "MMLU% / 10",
-          "music": "MOS (0-5) × 2",
-          "voice_clone": "Speaker Similarity (0-1) × 10"
-        }
+          "tts": {
+            "metric": "UTMOS",
+            "worst": 1.0,
+            "best": 5.0,
+            "formula": "(UTMOS - 1.0) / 4.0 × 10"
+          },
+          "stt": {
+            "metric": "WER%",
+            "worst": 50,
+            "best": 2,
+            "formula": "(50 - WER) / 48 × 10"
+          },
+          "translation": {
+            "metric": "BLEU",
+            "worst": 5,
+            "best": 50,
+            "formula": "(BLEU - 5) / 45 × 10"
+          },
+          "llm": {
+            "metric": "MMLU%",
+            "worst": 25,
+            "best": 90,
+            "formula": "(MMLU - 25) / 65 × 10"
+          },
+          "music": {
+            "metric": "MOS",
+            "worst": 1.0,
+            "best": 5.0,
+            "formula": "(MOS - 1.0) / 4.0 × 10"
+          },
+          "voice_clone": {
+            "metric": "Sim (0-1)",
+            "worst": 0.3,
+            "best": 0.95,
+            "formula": "(Sim - 0.3) / 0.65 × 10"
+          }
+        },
+        "bounds_note": "Bounds are set at realistic floor/ceiling for the modality, not based on current best model. Scores remain stable when new models are added."
       },
       "popularity": {
-        "weight": 0.30,
+        "weight": 0.3,
         "description": "HuggingFace downloads + likes, normalized to 0-10",
         "method": "10 × log10(downloads+1) / log10(baseline_downloads+1), where baseline is the most-downloaded model in the same modality (translation: google-t5/t5-small, 22.9M downloads). Log scale, not linear — raw download counts span several orders of magnitude across models, so a linear ratio would crush nearly everything to ~0."
       }
@@ -29,114 +60,170 @@
   },
   "models": {
     "kokoro": {
-      "hutash_score": 9.0,
+      "hutash_score": 9.13,
       "benchmark": {
         "metric": "UTMOS",
         "raw_score": 4.5,
-        "normalized": 9.0,
-        "scale": "0-10 (UTMOS×2)",
+        "normalized": 8.75,
+        "scale": "0-10 min-max ((UTMOS-1.0)/4.0×10)",
         "source": "Trelis Research Tricky TTS 2026",
         "source_url": "https://trelis.substack.com/p/top-text-to-speech-tts-models-in"
       },
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 12392256,
+        "hf_likes": 6698,
+        "normalized": 10.0,
+        "baseline": "hexgrad/Kokoro-82M — this model IS the #1 most-downloaded model under HuggingFace's text-to-speech pipeline tag, so it's its own baseline (popularity 10.0 by definition, not inflated)"
+      },
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 9.0→8.75 (UTMOS 4.5 was near the old formula's ceiling of 5.0×2=10 but sits mid-range on the new 1.0-5.0 floor/ceiling). Popularity added for the first time (previously untracked): normalized against a live-verified HF pipeline-tag ranking, not a guess.",
+      "hf_likes": 6698,
       "user_score": null,
       "user_count": 0
     },
     "parler-tts-mini-1.1": {
-      "hutash_score": 7.6,
+      "hutash_score": 6.21,
       "benchmark": {
         "metric": "UTMOS",
         "raw_score": 3.8,
-        "normalized": 7.6,
-        "scale": "0-10 (UTMOS×2)",
+        "normalized": 7.0,
+        "scale": "0-10 min-max ((UTMOS-1.0)/4.0×10)",
         "source": "HuggingFace model card community consensus",
         "source_url": "https://huggingface.co/parler-tts/parler-tts-mini-v1.1"
       },
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 1222,
+        "hf_likes": 30,
+        "normalized": 4.35,
+        "baseline": "hexgrad/Kokoro-82M (12.4M downloads) — #1 HF text-to-speech model, same baseline as every other TTS entry"
+      },
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 7.6→7.0. Popularity added for the first time (previously untracked, hf_downloads/likes verified live against the HuggingFace API).",
+      "hf_likes": 30,
       "user_score": null,
       "user_count": 0
     },
     "chatterbox": {
-      "hutash_score": 8.2,
+      "hutash_score": 8.43,
       "benchmark": {
         "metric": "UTMOS",
         "raw_score": 4.1,
-        "normalized": 8.2,
-        "scale": "0-10 (UTMOS×2)",
+        "normalized": 7.75,
+        "scale": "0-10 min-max ((UTMOS-1.0)/4.0×10)",
         "source": "Resemble AI / BentoML benchmark vs ElevenLabs",
         "source_url": "https://www.bentoml.com/blog/exploring-the-world-of-open-source-text-to-speech-models"
       },
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 2084027,
+        "hf_likes": 1745,
+        "normalized": 10.0,
+        "baseline": "ResembleAI/chatterbox — catalogue-internal baseline (itself, vs. dia-1.6b): HuggingFace has no clean external pipeline tag for zero-shot voice cloning specifically, unlike text-to-speech/automatic-speech-recognition, so no HF-wide reference point could be sourced the way it was for TTS/STT/translation"
+      },
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 8.2→7.75. Popularity added for the first time; this entry's metric has always been UTMOS despite the catalogue tagging it modality 'clone' (not the formula's Voice-Clone/Speaker-Similarity row) — kept as-is (re-deriving a Speaker Similarity score would need different data not sourced here), so it's normalized on the TTS/UTMOS row.",
+      "hf_likes": 1745,
       "user_score": null,
       "user_count": 0
     },
     "dia-1.6b": {
-      "hutash_score": 8.0,
+      "hutash_score": 7.15,
       "benchmark": {
         "metric": "UTMOS",
         "raw_score": 4.0,
-        "normalized": 8.0,
-        "scale": "0-10 (UTMOS×2)",
+        "normalized": 7.5,
+        "scale": "0-10 min-max ((UTMOS-1.0)/4.0×10)",
         "source": "Inferless TTS comparison 2025",
         "source_url": "https://www.inferless.com/learn/comparing-different-text-to-speech---tts--models-part-2"
       },
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 9900,
+        "hf_likes": 134,
+        "normalized": 6.32,
+        "baseline": "ResembleAI/chatterbox (2.08M downloads) — same catalogue-internal voice-clone baseline as chatterbox's own entry"
+      },
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 8.0→7.5. Popularity added for the first time; same UTMOS-not-Speaker-Similarity caveat as chatterbox's entry applies here too.",
+      "hf_likes": 134,
       "user_score": null,
       "user_count": 0
     },
     "whisper-large-v3": {
-      "hutash_score": 9.7,
+      "hutash_score": 9.49,
       "benchmark": {
         "metric": "WER",
         "raw_score": 2.7,
-        "normalized": 9.73,
-        "scale": "0-10 ((100-WER)/10)",
+        "normalized": 9.85,
+        "scale": "0-10 min-max ((50-WER)/48×10)",
         "source": "OpenAI Whisper paper, LibriSpeech clean test",
         "source_url": "https://arxiv.org/abs/2212.04356"
       },
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 1126783,
+        "hf_likes": 634,
+        "normalized": 8.65,
+        "baseline": "argmaxinc/whisperkit-coreml (9.92M downloads) — #1 HF automatic-speech-recognition model"
+      },
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 9.73→9.85 (STT's new 50→2 WER floor/ceiling is more forgiving near the top end than the old /10 division). Popularity added for the first time; hf_repo for the actual shipped package is Systran/faster-whisper-large-v3 (a CTranslate2 port), used for the download/like figures here.",
+      "hf_likes": 634,
       "user_score": null,
       "user_count": 0
     },
     "distil-whisper-large-v3": {
-      "hutash_score": 9.6,
+      "hutash_score": 8.85,
       "benchmark": {
         "metric": "WER",
         "raw_score": 2.85,
-        "normalized": 9.72,
-        "scale": "0-10 ((100-WER)/10)",
+        "normalized": 9.82,
+        "scale": "0-10 min-max ((50-WER)/48×10)",
         "source": "Distil-Whisper paper — within 1% of large-v3",
         "source_url": "https://huggingface.co/distil-whisper/distil-large-v3"
       },
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 39261,
+        "hf_likes": 70,
+        "normalized": 6.57,
+        "baseline": "argmaxinc/whisperkit-coreml (9.92M downloads) — same STT baseline as every other STT entry"
+      },
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 9.72→9.82. Popularity added for the first time; hf_repo for the actual shipped package is Systran/faster-distil-whisper-large-v3, used for the download/like figures here — its much lower popularity (39K vs. large-v3's 1.1M downloads) pulls this entry's overall score below plain whisper-large-v3's despite a near-identical benchmark, unlike the old formula where popularity wasn't tracked at all.",
+      "hf_likes": 70,
       "user_score": null,
       "user_count": 0
     },
     "whisper-tiny": {
-      "hutash_score": 9.4,
+      "hutash_score": 9.11,
       "benchmark": {
         "metric": "WER",
         "raw_score": 5.6,
-        "normalized": 9.44,
-        "scale": "0-10 ((100-WER)/10)",
+        "normalized": 9.25,
+        "scale": "0-10 min-max ((50-WER)/48×10)",
         "source": "OpenAI Whisper paper, LibriSpeech clean test",
         "source_url": "https://arxiv.org/abs/2212.04356"
       },
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 1426024,
+        "hf_likes": 24,
+        "normalized": 8.8,
+        "baseline": "argmaxinc/whisperkit-coreml (9.92M downloads) — same STT baseline as every other STT entry"
+      },
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 9.44→9.25. Popularity added for the first time; hf_repo for the actual shipped package is Systran/faster-whisper-tiny.",
+      "hf_likes": 24,
       "user_score": null,
       "user_count": 0
     },
     "ace-step-1.5": {
-      "hutash_score": 8.7,
+      "hutash_score": 5.86,
       "benchmark": {
         "metric": "SongEval",
         "raw_score": 4.35,
-        "normalized": 8.7,
-        "scale": "0-10 (SongEval×2)",
+        "normalized": 8.375,
+        "scale": "0-10 min-max ((SongEval-1.0)/4.0×10, Music row — SongEval uses the same 0-5 scale convention as MOS)",
         "source": "ACE-Step 1.5 technical report — outperforms Suno v5",
         "source_url": "https://ace-step.github.io/ace-step-v1.5.github.io/"
       },
-      "hf_likes": null,
+      "popularity": {
+        "hf_downloads": 0,
+        "hf_likes": 744,
+        "normalized": 0.0,
+        "baseline": "facebook/musicgen-medium (1.96M downloads) — #1 HF text-to-audio model, used as the music-modality baseline"
+      },
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 8.7→8.375. Popularity added for the first time and is a genuine data-completeness caveat, not a formula artifact: the HuggingFace API's own 'downloads' field for ACE-Step/ACE-Step-v1-3.5B returns 0 despite 744 likes, most likely because this repo's weights aren't distributed through the standard tracked-download path — this pulls the overall score down sharply (5.86) even though the underlying model quality (SongEval 4.35, a strong result per its own technical report) is unchanged. Flagging rather than substituting a guessed number; revisit if HuggingFace's download tracking for this repo changes.",
+      "hf_likes": 744,
       "user_score": null,
       "user_count": 0
     },
@@ -144,7 +231,7 @@
       "hutash_score": 7.0,
       "benchmark": null,
       "source": "engineering estimate",
-      "note": "Qwen3 1.7B (Q8_0 GGUF, CPU-only) — general-purpose LLM, no longer an internal-only tool. Scores are engineering estimates from the model's specs (1.7B parameters, INT8 quantization, CPU inference via llama.cpp) rather than a formal benchmark run — replace with real numbers if Qwen publishes official MMLU/benchmark results for this checkpoint.",
+      "note": "Qwen3 1.7B (Q8_0 GGUF, CPU-only) — general-purpose LLM, no longer an internal-only tool. Scores are engineering estimates from the model's specs (1.7B parameters, INT8 quantization, CPU inference via llama.cpp) rather than a formal benchmark run — replace with real numbers if Qwen publishes official MMLU/benchmark results for this checkpoint. 2026-08-17 min-max normalization update (METHODOLOGY.md) reviewed: no change to this entry — there is still no real benchmark number to normalize, so the new min-max formula has nothing to apply to.",
       "hf_likes": null,
       "user_score": null,
       "user_count": 0
@@ -153,7 +240,7 @@
       "hutash_score": 7.8,
       "benchmark": null,
       "source": "engineering estimate",
-      "note": "Gemma 4 E4B (GGUF, native tool calling) — general-purpose ~4B-effective-parameter LLM. Live web research (Aug 2026) could not produce a benchmark number reliable enough to cite: two sources gave conflicting MMLU-Pro figures for this checkpoint (69.4% per the huggingface.co/google/gemma-4-E4B-it model card vs. 77.2% per third-party blog aggregation), and a fetched arXiv 'technical report' in the same research pass misattributed Gemma to an unrelated company entirely instead of its real publisher, Google DeepMind — a clear fabrication that undermines confidence in the rest of that source. hutash_score is an engineering estimate only (newer model generation and larger effective parameter count than qwen3-1.7b, same reasoning as that entry's own estimate) — replace with a real number once Google's own official benchmark table can be verified against a primary source.",
+      "note": "Gemma 4 E4B (GGUF, native tool calling) — general-purpose ~4B-effective-parameter LLM. Live web research (Aug 2026) could not produce a benchmark number reliable enough to cite: two sources gave conflicting MMLU-Pro figures for this checkpoint (69.4% per the huggingface.co/google/gemma-4-E4B-it model card vs. 77.2% per third-party blog aggregation), and a fetched arXiv 'technical report' in the same research pass misattributed Gemma to an unrelated company entirely instead of its real publisher, Google DeepMind — a clear fabrication that undermines confidence in the rest of that source. hutash_score is an engineering estimate only (newer model generation and larger effective parameter count than qwen3-1.7b, same reasoning as that entry's own estimate) — replace with a real number once Google's own official benchmark table can be verified against a primary source. 2026-08-17 min-max normalization update (METHODOLOGY.md) reviewed: no change to this entry — there is still no real benchmark number to normalize, so the new min-max formula has nothing to apply to.",
       "hf_likes": null,
       "user_score": null,
       "user_count": 0
@@ -162,7 +249,7 @@
       "hutash_score": 8.0,
       "benchmark": null,
       "source": "engineering estimate",
-      "note": "Qwen3.5 4B (GGUF, native tool calling) — general-purpose 4B parameter LLM. Live web research (Aug 2026) surfaced an MMLU-Pro figure of 79.1% from a fetched huggingface.co/Qwen/Qwen3.5-4B model card — unusually high for a 4B model and gathered in the same research pass that produced a confirmed fabrication for the companion gemma4-e4b entry (see its note), so it is not cited here without independent confirmation. hutash_score is an engineering estimate only (newer model generation and larger parameter count than qwen3-1.7b, same reasoning as that entry's own estimate) — replace with a real number once Alibaba's own official benchmark table can be verified against a primary source.",
+      "note": "Qwen3.5 4B (GGUF, native tool calling) — general-purpose 4B parameter LLM. Live web research (Aug 2026) surfaced an MMLU-Pro figure of 79.1% from a fetched huggingface.co/Qwen/Qwen3.5-4B model card — unusually high for a 4B model and gathered in the same research pass that produced a confirmed fabrication for the companion gemma4-e4b entry (see its note), so it is not cited here without independent confirmation. hutash_score is an engineering estimate only (newer model generation and larger parameter count than qwen3-1.7b, same reasoning as that entry's own estimate) — replace with a real number once Alibaba's own official benchmark table can be verified against a primary source. 2026-08-17 min-max normalization update (METHODOLOGY.md) reviewed: no change to this entry — there is still no real benchmark number to normalize, so the new min-max formula has nothing to apply to.",
       "hf_likes": null,
       "user_score": null,
       "user_count": 0
@@ -171,7 +258,7 @@
       "hutash_score": 8.3,
       "benchmark": null,
       "source": "engineering estimate",
-      "note": "IndicConformer 600M (AI4Bharat, hybrid CTC/RNNT, 22 Indian languages) — engineering estimate, not a formal benchmark run. Scored relative to this catalogue's existing STT entries (whisper-large-v3 9.7, distil-whisper-large-v3 9.6, whisper-tiny 9.4 — all scored against English-centric WER benchmarks that don't cover Indian-language accuracy at all) rather than against those numbers directly: AI4Bharat's own IndicConformer technical reports claim competitive WER against Whisper on Indian-language test sets specifically, but no single normalized-scale (0-10, WER-derived) figure comparable to the Whisper entries' own methodology could be sourced and verified live for this exact 600M checkpoint. Replace with a real WER-normalized score once AI4Bharat publishes (or this checkpoint is benchmarked against) a directly comparable Indian-language test set figure.",
+      "note": "IndicConformer 600M (AI4Bharat, hybrid CTC/RNNT, 22 Indian languages) — engineering estimate, not a formal benchmark run. Scored relative to this catalogue's existing STT entries (whisper-large-v3 9.7, distil-whisper-large-v3 9.6, whisper-tiny 9.4 — all scored against English-centric WER benchmarks that don't cover Indian-language accuracy at all) rather than against those numbers directly: AI4Bharat's own IndicConformer technical reports claim competitive WER against Whisper on Indian-language test sets specifically, but no single normalized-scale (0-10, WER-derived) figure comparable to the Whisper entries' own methodology could be sourced and verified live for this exact 600M checkpoint. Replace with a real WER-normalized score once AI4Bharat publishes (or this checkpoint is benchmarked against) a directly comparable Indian-language test set figure. 2026-08-17 min-max normalization update (METHODOLOGY.md) reviewed: no change to this entry — there is still no real benchmark number to normalize, so the new min-max formula has nothing to apply to.",
       "hf_likes": null,
       "user_score": null,
       "user_count": 0
@@ -180,7 +267,7 @@
       "hutash_score": 7.4,
       "benchmark": null,
       "source": "engineering estimate",
-      "note": "Indic Parler-TTS (AI4Bharat fine-tune of Parler-TTS, 17 Indian languages + English) — engineering estimate, not a formal benchmark run. Scored just below parler-tts-mini-1.1 (7.6, itself a UTMOS-based community-consensus estimate, not a raw model benchmark) on the reasoning that a multilingual fine-tune spread across 18 languages typically trades a little per-language quality for breadth relative to the English-only base checkpoint it derives from, absent a directly comparable UTMOS figure for the Indic-language checkpoint itself. Replace with a real benchmark score once a UTMOS or equivalent MOS figure specific to this checkpoint's Indian-language output can be sourced and verified.",
+      "note": "Indic Parler-TTS (AI4Bharat fine-tune of Parler-TTS, 17 Indian languages + English) — engineering estimate, not a formal benchmark run. Scored just below parler-tts-mini-1.1 (7.6, itself a UTMOS-based community-consensus estimate, not a raw model benchmark) on the reasoning that a multilingual fine-tune spread across 18 languages typically trades a little per-language quality for breadth relative to the English-only base checkpoint it derives from, absent a directly comparable UTMOS figure for the Indic-language checkpoint itself. Replace with a real benchmark score once a UTMOS or equivalent MOS figure specific to this checkpoint's Indian-language output can be sourced and verified. 2026-08-17 min-max normalization update (METHODOLOGY.md) reviewed: no change to this entry — there is still no real benchmark number to normalize, so the new min-max formula has nothing to apply to.",
       "hf_likes": null,
       "user_score": null,
       "user_count": 0
@@ -189,29 +276,29 @@
       "hutash_score": 8.6,
       "benchmark": null,
       "source": "engineering estimate",
-      "note": "IndicTrans2 1B (AI4Bharat, English ↔ 22 Indian languages) — engineering estimate, not a formal benchmark run. AI4Bharat's own published BLEU/chrF++ figures on the IN22-Gen/IN22-Conv benchmarks describe the full IndicTrans2 model family, not isolated to this exact 1B En-Indic checkpoint, and are not on the 0-10 normalized scale the rest of this catalogue uses, so no single comparable number could be sourced and verified live. Scored as the catalogue's first dedicated translation model — first-party AI4Bharat research release, purpose-built and evaluated specifically for Indian-language translation (unlike MADLAD-400's broad 400+-language generalist scope) — rather than against any of the STT/TTS entries' own unrelated metrics. Replace with a real normalized score once a directly comparable IN22 figure for this specific checkpoint can be verified against a primary source.",
+      "note": "IndicTrans2 1B (AI4Bharat, English ↔ 22 Indian languages) — engineering estimate, not a formal benchmark run. AI4Bharat's own published BLEU/chrF++ figures on the IN22-Gen/IN22-Conv benchmarks describe the full IndicTrans2 model family, not isolated to this exact 1B En-Indic checkpoint, and are not on the 0-10 normalized scale the rest of this catalogue uses, so no single comparable number could be sourced and verified live. Scored as the catalogue's first dedicated translation model — first-party AI4Bharat research release, purpose-built and evaluated specifically for Indian-language translation (unlike MADLAD-400's broad 400+-language generalist scope) — rather than against any of the STT/TTS entries' own unrelated metrics. Replace with a real normalized score once a directly comparable IN22 figure for this specific checkpoint can be verified against a primary source. 2026-08-17 min-max normalization update (METHODOLOGY.md) reviewed: no change to this entry — there is still no real benchmark number to normalize, so the new min-max formula has nothing to apply to.",
       "hf_likes": null,
       "user_score": null,
       "user_count": 0
     },
     "madlad400-3b": {
-      "hutash_score": 3.89,
+      "hutash_score": 5.79,
       "benchmark": {
         "metric": "BLEU",
         "raw_score": 28.2,
-        "normalized": 2.82,
-        "scale": "0-10 (BLEU/10)",
+        "normalized": 5.16,
+        "scale": "0-10 min-max ((BLEU-5)/45×10)",
         "source": "MADLAD-400 paper (Kudugunta et al.), Table 4, MT-3B model, WMT en2xx direction",
         "source_url": "https://arxiv.org/abs/2309.04662"
       },
       "popularity": {
-        "hf_downloads": 50000,
-        "hf_likes": 120,
-        "normalized": 6.39,
+        "hf_downloads": 229192,
+        "hf_likes": 216,
+        "normalized": 7.28,
         "baseline": "google-t5/t5-small (22.9M downloads) — most-downloaded translation-pipeline model on HuggingFace"
       },
-      "note": "Replaces the prior engineering-estimate placeholder (8.1) with a formula-calculated score sourced from the paper's own Table 4: MT-3B model, WMT benchmark, en2xx (English-to-target) direction — chosen over the paper's other three reported figures (WMT xx2en 33.4, Flores-200 xx2en 29.7, Flores-200 en2xx 17.3) because en2xx/WMT most closely matches this catalogue's actual product usage (translating FROM English) against the standard external MT benchmark. hutash_score is markedly lower than this catalogue's other entries because BLEU/10 is a harsh normalization for translation quality (28.2 BLEU is a strong, competitive MT result — comparable to much larger models per the paper — but the literal formula crushes it to 2.82/10), unlike UTMOS×2 or (100-WER)/10 which are calibrated so a good model lands in the 8-9.5 range. Applied the formula exactly as specified rather than adjusting for this, since deviating from the given formula wasn't requested. HuggingFace popularity figures (~50K downloads, 120 likes) are as given in the task brief, not independently re-verified against a live API snapshot.",
-      "hf_likes": 120,
+      "note": "Recalculated under the new min-max normalization (METHODOLOGY.md, 2026-08-17): benchmark 2.82→5.16 (BLEU's new 5-50 floor/ceiling reflects that 28.2 BLEU is genuinely strong MT quality, unlike the old /10 division which flattened it near the bottom of the scale). Popularity re-verified live against the HuggingFace API: downloads/likes have grown to 229,192/216 (from the ~50K/120 figures given in the original task brief, which were explicitly flagged there as unverified) — using the current, verified numbers rather than the stale estimate.",
+      "hf_likes": 216,
       "user_score": null,
       "user_count": 0
     },
@@ -222,10 +309,10 @@
       "popularity": {
         "hf_downloads": 234058,
         "hf_likes": 53,
-        "normalized": 7.30,
-        "baseline": "google-t5/t5-small (22.9M downloads) — reused the translation-modality baseline for a consistent catalogue-wide popularity scale; no TTS-specific baseline was specified"
+        "normalized": 7.57,
+        "baseline": "hexgrad/Kokoro-82M (12.4M downloads) — #1 HF text-to-speech model; updated from the previous t5-small/translation placeholder now that a real TTS baseline has been established (used consistently for kokoro/parler-tts-mini-1.1/svara-tts)"
       },
-      "note": "Svara-TTS v1 (Kenpath Technologies, 19 Indian languages + Indian English, Orpheus/Llama-3.2-3B-based) — engineering estimate for the benchmark/quality component, not a formula-calculated hutash_score: live research (Aug 2026) found no published MOS, UTMOS, or other quality-metric score for this checkpoint anywhere — not on the model card, not in the inference repo, not in third-party coverage — so the formula's 70%-weighted benchmark component has no real input to calculate from. Scored via the same engineering-estimate pattern already used for indicconformer-600m/indic-parler-tts/indictrans2-1b/madlad400-3b's prior placeholder: positioned near chatterbox (8.2) and above dia-1.6b (8.0) and parler-tts-mini-1.1 (7.6), reflecting real, verified popularity (234,058 downloads/month, 53 likes per the HuggingFace API — notably higher traction than this catalogue's other recent Indic-language additions) plus the widest per-model language coverage in this catalogue (19 languages) and an ungated, Apache-2.0, actively-maintained release. The task brief cited '800K+ downloads' (Kenpath's own claim, presumably all-time cumulative); the HuggingFace API's own 'downloads' field returns 234,058 (a rolling/monthly figure, the same metric basis used for every other popularity number in this file) — used the verified API figure for the popularity calculation rather than the unverifiable cumulative claim, and note both here for transparency. Replace hutash_score with a formula-calculated one once a verified MOS/UTMOS figure for this checkpoint can be sourced.",
+      "note": "Svara-TTS v1 (Kenpath Technologies, 19 Indian languages + Indian English, Orpheus/Llama-3.2-3B-based) — engineering estimate for the benchmark/quality component, not a formula-calculated hutash_score: live research (Aug 2026) found no published MOS, UTMOS, or other quality-metric score for this checkpoint anywhere — not on the model card, not in the inference repo, not in third-party coverage — so the formula's 70%-weighted benchmark component has no real input to calculate from. Scored via the same engineering-estimate pattern already used for indicconformer-600m/indic-parler-tts/indictrans2-1b/madlad400-3b's prior placeholder: positioned near chatterbox (8.43) and above dia-1.6b (7.15) and parler-tts-mini-1.1 (6.21), reflecting real, verified popularity (234,058 downloads/month, 53 likes per the HuggingFace API — notably higher traction than this catalogue's other recent Indic-language additions) plus the widest per-model language coverage in this catalogue (19 languages) and an ungated, Apache-2.0, actively-maintained release. The task brief cited '800K+ downloads' (Kenpath's own claim, presumably all-time cumulative); the HuggingFace API's own 'downloads' field returns 234,058 (a rolling/monthly figure, the same metric basis used for every other popularity number in this file) — used the verified API figure for the popularity calculation rather than the unverifiable cumulative claim, and note both here for transparency. Replace hutash_score with a formula-calculated one once a verified MOS/UTMOS figure for this checkpoint can be sourced. 2026-08-17 min-max normalization update (METHODOLOGY.md) reviewed: doesn't change this entry's hutash_score since benchmark is still null — only the popularity baseline was refreshed (now kokoro, a real TTS-modality reference, instead of the old translation-modality placeholder). Replace hutash_score with a formula-calculated one once a verified MOS/UTMOS figure for this checkpoint can be sourced.",
       "hf_likes": 53,
       "user_score": null,
       "user_count": 0
