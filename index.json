@@ -20,6 +20,16 @@
       "color": "#93C5FD",
       "label": "Transcribe",
       "subfolder": "transcripts"
+    },
+    "translate": {
+      "color": "#A5D6A7",
+      "label": "Translate",
+      "subfolder": "translations"
+    },
+    "llm": {
+      "color": "#E5A54B",
+      "label": "Chat",
+      "subfolder": null
     }
   },
   "features": [
@@ -87,6 +97,18 @@
           ]
         }
       ],
+      "permissions": []
+    },
+    {
+      "id": "translate",
+      "name": "Translate",
+      "description": "Translate .txt/.srt documents, or a short passage inline.",
+      "modality": "translate",
+      "primary_model_id": "madlad400-3b",
+      "icon": "languages",
+      "version": "1.0.0",
+      "layout": "aggregator-3panel",
+      "accepts": [],
       "permissions": []
     }
   ],
