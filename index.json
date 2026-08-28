@@ -241,28 +241,6 @@
       "low_vram_capable": true
     },
     {
-      "id": "indic-parler-tts",
-      "type": "pipeline",
-      "category": "audio",
-      "hutash": "pipelines/indic-parler-tts.hutash",
-      "name": "Indic Parler TTS",
-      "description": "Describe a voice in plain English and write the text in the target Indian language — no separate language selector.",
-      "version": "1.0.0",
-      "license": "Apache-2.0",
-      "min_vram_gb": 6.0,
-      "disk_size_gb": 3.75,
-      "quality_score": 0.8,
-      "speed": null,
-      "modality": "tts",
-      "hardware_label": "GPU (6GB+)",
-      "internal": false,
-      "hf_repo": "ai4bharat/indic-parler-tts",
-      "hf_revision": "7b527af5ee8ed1f9a28d80b19703ed9bb8ba10ca",
-      "allow_patterns": null,
-      "weights_external": true,
-      "low_vram_capable": true
-    },
-    {
       "id": "kokoro",
       "type": "pipeline",
       "category": "audio",
