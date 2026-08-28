@@ -445,7 +445,7 @@
       "hutash": "pipelines/whisper-tiny.hutash",
       "name": "Whisper Tiny",
       "description": "Lightweight transcription model. Fast and efficient for basic use cases.",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "license": "MIT",
       "min_vram_gb": 0,
       "disk_size_gb": 0.7,
