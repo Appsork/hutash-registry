@@ -288,6 +288,35 @@
       "low_vram_capable": false
     },
     {
+      "id": "opus-mt-en-hi",
+      "type": "pipeline",
+      "category": "text",
+      "hutash": "pipelines/opus-mt-en-hi.hutash",
+      "name": "Opus-MT English-Hindi",
+      "description": "Lightweight English-to-Hindi machine translation, CPU-only.",
+      "version": "1.0.0",
+      "license": "Apache-2.0",
+      "min_vram_gb": 0,
+      "disk_size_gb": 0.29,
+      "quality_score": 0.8,
+      "speed": null,
+      "modality": "translate",
+      "hardware_label": "CPU",
+      "internal": false,
+      "hf_repo": "Helsinki-NLP/opus-mt-en-hi",
+      "hf_revision": "75d7f7c9232b2891c7d65fe4ef635616c72be867",
+      "allow_patterns": [
+        "config.json",
+        "generation_config.json",
+        "pytorch_model.bin",
+        "source.spm",
+        "target.spm",
+        "tokenizer_config.json",
+        "vocab.json"
+      ],
+      "weights_external": true
+    },
+    {
       "id": "parler-tts-mini-1.1",
       "type": "pipeline",
       "category": "audio",
