@@ -325,7 +325,7 @@
       "hutash": "pipelines/opus-mt-en-hi.hutash",
       "name": "Opus-MT English-Hindi",
       "description": "Lightweight English-to-Hindi machine translation, CPU-only.",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "license": "Apache-2.0",
       "min_vram_gb": 0,
       "disk_size_gb": 0.29,
@@ -345,7 +345,8 @@
         "tokenizer_config.json",
         "vocab.json"
       ],
-      "weights_external": true
+      "weights_external": true,
+      "min_os_version": "1.0.2"
     },
     {
       "id": "parler-tts-mini-1.1",
