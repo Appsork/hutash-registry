@@ -302,6 +302,15 @@
       "user_score": null,
       "user_count": 0
     },
+    "opus-mt-en-hi": {
+      "hutash_score": 6.0,
+      "benchmark": null,
+      "source": "engineering estimate",
+      "note": "Helsinki-NLP opus-mt-en-hi (MarianMT, English to Hindi) — engineering estimate, not a formal benchmark run. Scored as a lightweight CPU translation model: small, fast and dependency-light enough to run comfortably without a GPU, and good for basic translation, but less accurate than MADLAD-400. No comparable normalized figure was sourced: the model card's BLEU numbers are per-testset (newsdev/newstest) rather than the single normalized value the rest of this catalogue carries, and none was verified live, so `benchmark` stays null rather than holding a number nobody checked. ORDERING CAVEAT, recorded rather than smoothed over: this 6.0 sits ABOVE madlad400-3b's 5.79, which reads oddly next to the accuracy comparison above. madlad's score is formula-derived and pulled down by the min-max BLEU normalization (28.2 BLEU -> 5.16 benchmark), while this one is an estimate on the same 0-10 scale but not through the same pipeline — the two are not strictly comparable, and indictrans2-1b's 8.6 is an estimate of the same kind. Replace with a real normalized score once a directly comparable BLEU figure for this checkpoint can be verified against a primary source.",
+      "hf_likes": null,
+      "user_score": null,
+      "user_count": 0
+    },
     "svara-tts": {
       "hutash_score": 8.2,
       "benchmark": null,
