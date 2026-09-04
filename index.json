@@ -269,7 +269,7 @@
       "hutash": "pipelines/kokoro.hutash",
       "name": "Kokoro",
       "description": "Natural-sounding text-to-speech with multiple voice presets and speaking styles.",
-      "version": "1.0.12",
+      "version": "1.0.13",
       "license": "Apache-2.0",
       "min_vram_gb": 0,
       "disk_size_gb": 0.4,
@@ -293,7 +293,9 @@
         "fr",
         "hi",
         "it",
-        "pt"
+        "pt",
+        "ja",
+        "zh"
       ]
     },
     {
