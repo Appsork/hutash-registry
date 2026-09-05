@@ -296,7 +296,8 @@
         "pt",
         "ja",
         "zh"
-      ]
+      ],
+      "min_ram_gb": 2.0
     },
     {
       "id": "madlad400-3b",
@@ -348,7 +349,8 @@
         "vocab.json"
       ],
       "weights_external": true,
-      "min_os_version": "1.0.2"
+      "min_os_version": "1.0.2",
+      "min_ram_gb": 1.0
     },
     {
       "id": "parler-tts-mini-1.1",
@@ -394,7 +396,8 @@
         "Qwen3-1.7B-Q8_0.gguf"
       ],
       "weights_external": true,
-      "low_vram_capable": true
+      "low_vram_capable": true,
+      "min_ram_gb": 4.0
     },
     {
       "id": "qwen3.5-4b",
@@ -491,7 +494,8 @@
       "hf_repo": "Systran/faster-whisper-tiny",
       "hf_revision": "d90ca5fe260221311c53c58e660288d3deb8d356",
       "allow_patterns": null,
-      "weights_external": true
+      "weights_external": true,
+      "min_ram_gb": 1.0
     },
     {
       "id": "hivision-idphotos",
