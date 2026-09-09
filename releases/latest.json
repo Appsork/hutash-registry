@@ -1,0 +1,11 @@
+{
+    "version":  "1.0.2",
+    "notes":  "Release notes here",
+    "pub_date":  "2026-09-07T18:16:42Z",
+    "platforms":  {
+                      "windows-x86_64":  {
+                                             "url":  "https://github.com/Appsork/hutash-registry/releases/download/v1.0.2/Hutash-OS-Setup.exe",
+                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRY3paRnUvZXVJQVBraGhFbzhCMkpKa21jZXI1dENPVktpSHd2dkNOcGtyZXROc055RmVXeXNUOFJmOHRuVEJDL3M3MS9uRHgwbjk2emdtU0VKd1hwbVB6MnRnLzdiYXdZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg4ODA1MDAxCWZpbGU6SHV0YXNoIE9TXzEuMC4yX3g2NC1zZXR1cC5leGUKT25yWTFpNUsxL3BTZFAzRW9tRkFwdFBLVFRFOTZUWmRMYk5HTkNUa1dkaE1hVE1meVE5ZFBBc013QzNJbjRGVzdHMzRoMXVmRWVWWm9yK1BhKzlKQmc9PQo="
+                                         }
+                  }
+}
