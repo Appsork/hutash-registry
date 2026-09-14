@@ -327,10 +327,10 @@
       "type": "pipeline",
       "category": "LLM",
       "hutash": "pipelines/gemma4-e4b.hutashm",
-      "sha256": "9094b2b5b44c09fb29ac4f6756877267d237eac6e49603ba53340a64df76adbf",
+      "sha256": "b6a87c42c7230fd5be692b16003ca11956330790ba80926054bb00b7dc7cd295",
       "name": "Gemma 4 E4B",
       "description": "General-purpose 4B parameter language model (GGUF) with native tool calling.",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "license": "Apache-2.0",
       "min_vram_gb": 5.0,
       "disk_size_gb": 4.98,
@@ -355,7 +355,25 @@
       "languages": [
         "en",
         "multilingual"
-      ]
+      ],
+      "required_cpu_features": {
+        "cpu": [
+          "avx",
+          "avx2",
+          "f16c",
+          "fma",
+          "avx512f",
+          "avx512bw",
+          "avx512dq",
+          "avx512vl"
+        ],
+        "gpu": [
+          "avx",
+          "avx2",
+          "f16c",
+          "fma"
+        ]
+      }
     },
     {
       "id": "indic-parler-tts",
@@ -587,10 +605,10 @@
       "type": "pipeline",
       "category": "LLM",
       "hutash": "pipelines/qwen3-1.7b.hutashm",
-      "sha256": "655edf3013ae36231d802e4c564f6ca3f4c5dfe0c3dd1b2b44a777d1812b2b5c",
+      "sha256": "9f0ae3db6ab6c4fc85120fc8f3b177bb130105a5198360c42de6678557954712",
       "name": "Qwen3 1.7B",
       "description": "General-purpose 1.7B parameter language model (GGUF).",
-      "version": "1.0.11",
+      "version": "1.0.12",
       "license": "Apache-2.0",
       "min_vram_gb": 3,
       "disk_size_gb": 1.83,
@@ -617,17 +635,35 @@
         "multilingual"
       ],
       "min_os_version": "1.0.0",
-      "min_ram_gb": 4.0
+      "min_ram_gb": 4.0,
+      "required_cpu_features": {
+        "cpu": [
+          "avx",
+          "avx2",
+          "f16c",
+          "fma",
+          "avx512f",
+          "avx512bw",
+          "avx512dq",
+          "avx512vl"
+        ],
+        "gpu": [
+          "avx",
+          "avx2",
+          "f16c",
+          "fma"
+        ]
+      }
     },
     {
       "id": "qwen3.5-4b",
       "type": "pipeline",
       "category": "LLM",
       "hutash": "pipelines/qwen3.5-4b.hutashm",
-      "sha256": "dbfc1dfbe8fc8cf8042a615186c77c278e8d716887c62a4396970cfa6f0ec59a",
+      "sha256": "063ff15354b873255a4eddb4401e2ca0e017a1b4819a0d3276d023c9f7c7d863",
       "name": "Qwen3.5 4B",
       "description": "General-purpose 4B parameter language model (GGUF) with native tool calling.",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "license": "Apache-2.0",
       "min_vram_gb": 4.0,
       "disk_size_gb": 2.74,
@@ -652,7 +688,25 @@
       "languages": [
         "en",
         "multilingual"
-      ]
+      ],
+      "required_cpu_features": {
+        "cpu": [
+          "avx",
+          "avx2",
+          "f16c",
+          "fma",
+          "avx512f",
+          "avx512bw",
+          "avx512dq",
+          "avx512vl"
+        ],
+        "gpu": [
+          "avx",
+          "avx2",
+          "f16c",
+          "fma"
+        ]
+      }
     },
     {
       "id": "stable-diffusion-1.5",
