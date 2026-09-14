@@ -675,7 +675,7 @@
       "type": "application",
       "category": "Video Tools",
       "hutash": "apps/hutash-subs.hutash",
-      "sha256": "78f6efa96249016bf80bfed8d5aabd19a1d6f68efe53de368f14f1590b2eaff4",
+      "sha256": "8e65f472ee7d3c94a99609468166a464d6041170be3568351343fa96837143db",
       "name": "Hutash Subs (Beta)",
       "description": "Transcribe and translate video subtitles locally using AI models",
       "version": "1.0.0",
