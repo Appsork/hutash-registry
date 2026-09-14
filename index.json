@@ -659,12 +659,12 @@
       "type": "pipeline",
       "category": "image",
       "hutash": "pipelines/stable-diffusion-1.5.hutashm",
-      "sha256": "b7d3babd65b16a2e56a7a684ace809ab3db476b9ffca0852acdd3750c9db9b51",
+      "sha256": "900f339eb6fd9c062811ece80b3d4feee351862cc859338e609597d295036fe5",
       "name": "Stable Diffusion 1.5",
       "description": "The original text-to-image model. Runs on consumer GPUs, and on CPU if it has to.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "license": "CreativeML Open RAIL-M",
-      "min_vram_gb": 4.0,
+      "min_vram_gb": 3.0,
       "disk_size_gb": 2.2,
       "quality_score": 0.75,
       "speed": null,
@@ -696,7 +696,7 @@
         "en"
       ],
       "min_os_version": "1.0.2",
-      "min_ram_gb": 8.0
+      "min_ram_gb": 4.0
     },
     {
       "id": "svara-tts",

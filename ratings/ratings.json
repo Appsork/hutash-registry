@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-18",
+  "updated_at": "2026-09-14",
   "version": "1.0",
   "formula_version": "1.0",
   "_formula": {
@@ -329,6 +329,10 @@
     "stable-diffusion-1.5": {
       "hutash_score": 7.5,
       "note": "EDITORIAL, not computed. Every other entry in this file carries a benchmark with a named source and a normalisation; this one does not, because no comparable image-quality benchmark was run for it. 7.5 is a placement relative to the catalogue — clearly below a current model, clearly usable — and it should be replaced by a measured score rather than kept. Recorded as editorial so it is not mistaken for one."
+    },
+    "flux1-schnell-q4": {
+      "hutash_score": 8.5,
+      "note": "EDITORIAL, not computed. No comparable image-quality benchmark was run for it, so this is a placement of the same kind as stable-diffusion-1.5's 7.5, not a measurement: FLUX.1 Schnell is a newer and stronger image model than Stable Diffusion 1.5 (its manifest's quality_score is 0.9 against SD 1.5's 0.75), so it sits above it. It should be replaced by a measured score rather than kept. Recorded as editorial so it is not mistaken for one."
     }
   }
 }
