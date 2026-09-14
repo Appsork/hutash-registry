@@ -135,7 +135,7 @@
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/ace-step-1.5.hutashm",
-      "sha256": "c7df4986cc0de949184dde50fe921889b5a5b88964ba7ca7db389d1345d4ab70",
+      "sha256": "d0d90e0386d44fd60e32d2549bc29613ea02dedadde16ab318a466850c1e2e2d",
       "name": "ACE-Step 1.5",
       "description": "Music generation from text prompts. Stems, lyrics, and tempo control.",
       "version": "1.0.4",
@@ -145,20 +145,30 @@
       "quality_score": 0.92,
       "speed": null,
       "modality": "music",
+      "capabilities": [
+        {
+          "id": "music",
+          "modality": "music"
+        }
+      ],
       "hardware_label": "GPU (4GB+)",
       "internal": false,
       "hf_repo": "ACE-Step/ACE-Step-v1-3.5B",
       "hf_revision": "82cd0d7b6322bd28cd4e830fe675ddb6180ce36c",
       "allow_patterns": null,
       "weights_external": true,
-      "low_vram_capable": true
+      "low_vram_capable": true,
+      "languages": [
+        "en",
+        "multilingual"
+      ]
     },
     {
       "id": "chatterbox",
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/chatterbox.hutashm",
-      "sha256": "b9eb1be5286d2eac091e74a4d15363b09a6ebacf92c48059b16e227df3a86772",
+      "sha256": "14631216e3dfc04fe9827a5021025392c7c7d5b89469fe77260fffa9433b71e1",
       "name": "Chatterbox",
       "description": "Voice cloning from a 5–30 second reference audio clip.",
       "version": "1.0.5",
@@ -168,6 +178,16 @@
       "quality_score": 0.9,
       "speed": null,
       "modality": "clone",
+      "capabilities": [
+        {
+          "id": "voice-clone",
+          "modality": "clone"
+        },
+        {
+          "id": "tts",
+          "modality": "clone"
+        }
+      ],
       "hardware_label": "GPU (6GB+)",
       "internal": false,
       "hf_repo": "ResembleAI/chatterbox",
@@ -180,14 +200,17 @@
         "conds.pt"
       ],
       "weights_external": true,
-      "low_vram_capable": false
+      "low_vram_capable": false,
+      "languages": [
+        "en"
+      ]
     },
     {
       "id": "dia-1.6b",
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/dia-1.6b.hutashm",
-      "sha256": "e0f7ee82fdd2a19dbc795b57f89a3f3e10d1cad1c981dd0bd089f61b6dadc975",
+      "sha256": "4b3a561dd842d1d46e7ad74e4f71e0000cb4514a90b53ac75bf7bcc23ca5684a",
       "name": "Dia 1.6B",
       "description": "Multi-speaker dialogue TTS with in-context voice cloning and nonverbal cues.",
       "version": "1.0.4",
@@ -197,6 +220,12 @@
       "quality_score": 0.91,
       "speed": null,
       "modality": "clone",
+      "capabilities": [
+        {
+          "id": "voice-clone",
+          "modality": "clone"
+        }
+      ],
       "hardware_label": "GPU (6GB+)",
       "internal": false,
       "hf_repo": "nari-labs/Dia-1.6B-0626",
@@ -213,14 +242,17 @@
         "model-00002-of-00002.safetensors"
       ],
       "weights_external": true,
-      "low_vram_capable": false
+      "low_vram_capable": false,
+      "languages": [
+        "en"
+      ]
     },
     {
       "id": "distil-whisper-large-v3",
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/distil-whisper-large-v3.hutashm",
-      "sha256": "34844c7dc86f5aab6cbe9e59a04fda8ec084b0541ad02c2740357bf673cd90cc",
+      "sha256": "5a36c1d7bdd497e47d4b8f18b8f40557eea9536ee3194ca746afcef4606e0e91",
       "name": "Distil-Whisper",
       "description": "Faster distilled Whisper. Near-v3 accuracy at a fraction of the size.",
       "version": "1.0.4",
@@ -230,12 +262,21 @@
       "quality_score": 0.94,
       "speed": null,
       "modality": "stt",
+      "capabilities": [
+        {
+          "id": "stt",
+          "modality": "stt"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "Systran/faster-distil-whisper-large-v3",
       "hf_revision": "c3058b475261292e64a0412df1d2681c06260fab",
       "allow_patterns": null,
       "weights_external": true,
+      "languages": [
+        "en"
+      ],
       "min_os_version": "1.0.0"
     },
     {
@@ -243,7 +284,7 @@
       "type": "pipeline",
       "category": "image",
       "hutash": "pipelines/flux1-schnell-q4.hutashm",
-      "sha256": "187ccd094ee32db0c03f26b038bb2145ae00c8fc6b608cd11dc15257e51c8d13",
+      "sha256": "cbe731e9d633488e338417a8e488ca7927febead7b1921075329a90b34dfbce4",
       "name": "FLUX.1 Schnell (Q4)",
       "description": "Fast 12B text-to-image. Four steps to a 1024x1024 image, quantised to run on a consumer GPU.",
       "version": "1.0.0",
@@ -253,6 +294,12 @@
       "quality_score": 0.9,
       "speed": null,
       "modality": "image",
+      "capabilities": [
+        {
+          "id": "image",
+          "modality": "image"
+        }
+      ],
       "hardware_label": "GPU (8GB+)",
       "internal": false,
       "hf_repo": "black-forest-labs/FLUX.1-schnell",
@@ -269,6 +316,9 @@
       ],
       "weights_external": true,
       "language": "en",
+      "languages": [
+        "en"
+      ],
       "min_os_version": "1.0.2",
       "min_ram_gb": 16.0
     },
@@ -277,16 +327,22 @@
       "type": "pipeline",
       "category": "LLM",
       "hutash": "pipelines/gemma4-e4b.hutashm",
-      "sha256": "0340b99004cf62a9ddfc93ac5c4c8f59573b215d7c05500123c61e4e75ceca95",
+      "sha256": "9094b2b5b44c09fb29ac4f6756877267d237eac6e49603ba53340a64df76adbf",
       "name": "Gemma 4 E4B",
       "description": "General-purpose 4B parameter language model (GGUF) with native tool calling.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "license": "Apache-2.0",
       "min_vram_gb": 5.0,
       "disk_size_gb": 4.98,
       "quality_score": 0.88,
       "speed": null,
       "modality": "llm",
+      "capabilities": [
+        {
+          "id": "llm",
+          "modality": "llm"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "unsloth/gemma-4-E4B-it-GGUF",
@@ -295,14 +351,18 @@
         "gemma-4-E4B-it-Q4_K_M.gguf"
       ],
       "weights_external": true,
-      "low_vram_capable": true
+      "low_vram_capable": true,
+      "languages": [
+        "en",
+        "multilingual"
+      ]
     },
     {
       "id": "indic-parler-tts",
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/indic-parler-tts.hutashm",
-      "sha256": "d19574da27ae73394481b56020fe2b2665c72ed244f56d7f771f72233d2bc8ce",
+      "sha256": "5f4fa0d8933ccd146b8f0faebd7d876538ca684715858bf0e46304b3e77505d1",
       "name": "Indic Parler TTS",
       "description": "Describe a voice in plain English and write the text in the target Indian language — no separate language selector.",
       "version": "1.0.0",
@@ -312,20 +372,30 @@
       "quality_score": 0.8,
       "speed": null,
       "modality": "tts",
+      "capabilities": [
+        {
+          "id": "tts",
+          "modality": "tts"
+        }
+      ],
       "hardware_label": "GPU (6GB+)",
       "internal": false,
       "hf_repo": "ai4bharat/indic-parler-tts",
       "hf_revision": "7b527af5ee8ed1f9a28d80b19703ed9bb8ba10ca",
       "allow_patterns": null,
       "weights_external": true,
-      "low_vram_capable": true
+      "low_vram_capable": true,
+      "languages": [
+        "en",
+        "multilingual"
+      ]
     },
     {
       "id": "kokoro",
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/kokoro.hutashm",
-      "sha256": "0630e427b3966fe4f8a833f2a9aa6cfd9bc3981023b1070630348d27e234967f",
+      "sha256": "40a7023069e09f75687c51edccf4f646faabde5e7d4b783332f2e0b510c74aeb",
       "name": "Kokoro",
       "description": "Natural-sounding text-to-speech with multiple voice presets and speaking styles.",
       "version": "1.0.15",
@@ -335,6 +405,12 @@
       "quality_score": 0.88,
       "speed": null,
       "modality": "tts",
+      "capabilities": [
+        {
+          "id": "tts",
+          "modality": "tts"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "hexgrad/Kokoro-82M",
@@ -352,9 +428,7 @@
         "fr",
         "hi",
         "it",
-        "pt",
-        "ja",
-        "zh"
+        "pt"
       ],
       "min_os_version": "1.0.2",
       "min_ram_gb": 2.0
@@ -364,7 +438,7 @@
       "type": "pipeline",
       "category": "text",
       "hutash": "pipelines/madlad400-3b.hutashm",
-      "sha256": "9a82aa25b5ae2e2832ba04a2004b9ecbb0b107bfc620b79bc810cb8cecd66fba",
+      "sha256": "f5f0dbc4dcdd6717394f9da298a78a4629e2335f97f085acdc8482514a575d7b",
       "name": "MADLAD-400 3B",
       "description": "T5-based document translation across 400+ languages.",
       "version": "1.0.4",
@@ -374,6 +448,12 @@
       "quality_score": 0.86,
       "speed": null,
       "modality": "translate",
+      "capabilities": [
+        {
+          "id": "translate",
+          "modality": "translate"
+        }
+      ],
       "hardware_label": "GPU (8GB+)",
       "internal": false,
       "hf_repo": "google/madlad400-3b-mt",
@@ -381,6 +461,51 @@
       "allow_patterns": null,
       "weights_external": true,
       "low_vram_capable": false,
+      "languages": {
+        "source": "multilingual",
+        "target": [
+          "en",
+          "es",
+          "fr",
+          "de",
+          "it",
+          "pt",
+          "ru",
+          "zh",
+          "ja",
+          "ko",
+          "ar",
+          "hi",
+          "bn",
+          "ur",
+          "tr",
+          "vi",
+          "th",
+          "id",
+          "ms",
+          "nl",
+          "pl",
+          "uk",
+          "ro",
+          "el",
+          "he",
+          "sv",
+          "fi",
+          "da",
+          "no",
+          "cs",
+          "hu",
+          "bg",
+          "sr",
+          "hr",
+          "sk",
+          "sl",
+          "lt",
+          "lv",
+          "et",
+          "fa"
+        ]
+      },
       "min_os_version": "1.0.0"
     },
     {
@@ -388,7 +513,7 @@
       "type": "pipeline",
       "category": "text",
       "hutash": "pipelines/opus-mt-en-hi.hutashm",
-      "sha256": "4c7e72c04022bb96bdb8e25ccb0d7297081246db3e6c9a8338209f5e8298d71a",
+      "sha256": "315fd8d8cda6da7ff56c8516e6c301f55066bd17968e9cf94986458d102531bc",
       "name": "Opus-MT English-Hindi",
       "description": "Lightweight English-to-Hindi machine translation, CPU-only.",
       "version": "1.0.4",
@@ -398,6 +523,12 @@
       "quality_score": 0.8,
       "speed": null,
       "modality": "translate",
+      "capabilities": [
+        {
+          "id": "translate",
+          "modality": "translate"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "Helsinki-NLP/opus-mt-en-hi",
@@ -412,6 +543,10 @@
         "vocab.json"
       ],
       "weights_external": true,
+      "languages": {
+        "source": "en",
+        "target": "hi"
+      },
       "min_os_version": "1.0.2",
       "min_ram_gb": 1.0
     },
@@ -420,7 +555,7 @@
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/parler-tts-mini-1.1.hutashm",
-      "sha256": "2c5f74865b7b4d07ece233d9cb32f2412113c585970b6715f4d97458cdbdafef",
+      "sha256": "3f863ab98ca6393e148b67fbf02b3038756b98cc0d885cc2c6a08fdad5db76ad",
       "name": "Parler TTS Mini",
       "description": "Describe a voice in plain English — gender, tone, pace, recording quality.",
       "version": "1.0.4",
@@ -430,29 +565,44 @@
       "quality_score": 0.82,
       "speed": null,
       "modality": "tts",
+      "capabilities": [
+        {
+          "id": "tts",
+          "modality": "tts"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "parler-tts/parler-tts-mini-v1.1",
       "hf_revision": "fbb2dd281092c5b414ef29cf9d8895f386f1feef",
       "allow_patterns": null,
       "weights_external": true,
-      "low_vram_capable": true
+      "low_vram_capable": true,
+      "languages": [
+        "en"
+      ]
     },
     {
       "id": "qwen3-1.7b",
       "type": "pipeline",
       "category": "LLM",
       "hutash": "pipelines/qwen3-1.7b.hutashm",
-      "sha256": "4bbb4c5cccd555dd535a860c7a1d9dd15854761cb31cbce5f4ee85e5aa41575d",
+      "sha256": "655edf3013ae36231d802e4c564f6ca3f4c5dfe0c3dd1b2b44a777d1812b2b5c",
       "name": "Qwen3 1.7B",
       "description": "General-purpose 1.7B parameter language model (GGUF).",
-      "version": "1.0.10",
+      "version": "1.0.11",
       "license": "Apache-2.0",
       "min_vram_gb": 3,
       "disk_size_gb": 1.83,
       "quality_score": 0.85,
       "speed": null,
       "modality": "llm",
+      "capabilities": [
+        {
+          "id": "llm",
+          "modality": "llm"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "Qwen/Qwen3-1.7B-GGUF",
@@ -462,6 +612,10 @@
       ],
       "weights_external": true,
       "low_vram_capable": true,
+      "languages": [
+        "en",
+        "multilingual"
+      ],
       "min_os_version": "1.0.0",
       "min_ram_gb": 4.0
     },
@@ -470,16 +624,22 @@
       "type": "pipeline",
       "category": "LLM",
       "hutash": "pipelines/qwen3.5-4b.hutashm",
-      "sha256": "e42dadc676ed6297135d7fe9f2a6c499ee62050f72c759457fa24ebccdc132dc",
+      "sha256": "dbfc1dfbe8fc8cf8042a615186c77c278e8d716887c62a4396970cfa6f0ec59a",
       "name": "Qwen3.5 4B",
       "description": "General-purpose 4B parameter language model (GGUF) with native tool calling.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "license": "Apache-2.0",
       "min_vram_gb": 4.0,
       "disk_size_gb": 2.74,
       "quality_score": 0.9,
       "speed": null,
       "modality": "llm",
+      "capabilities": [
+        {
+          "id": "llm",
+          "modality": "llm"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "unsloth/Qwen3.5-4B-GGUF",
@@ -488,14 +648,18 @@
         "Qwen3.5-4B-Q4_K_M.gguf"
       ],
       "weights_external": true,
-      "low_vram_capable": true
+      "low_vram_capable": true,
+      "languages": [
+        "en",
+        "multilingual"
+      ]
     },
     {
       "id": "stable-diffusion-1.5",
       "type": "pipeline",
       "category": "image",
       "hutash": "pipelines/stable-diffusion-1.5.hutashm",
-      "sha256": "f4c7ca8041911e22481f045f53f851e502216dd7828f6df31baf6cfb732069ea",
+      "sha256": "b7d3babd65b16a2e56a7a684ace809ab3db476b9ffca0852acdd3750c9db9b51",
       "name": "Stable Diffusion 1.5",
       "description": "The original text-to-image model. Runs on consumer GPUs, and on CPU if it has to.",
       "version": "1.0.0",
@@ -505,6 +669,12 @@
       "quality_score": 0.75,
       "speed": null,
       "modality": "image",
+      "capabilities": [
+        {
+          "id": "image",
+          "modality": "image"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "stable-diffusion-v1-5/stable-diffusion-v1-5",
@@ -522,6 +692,9 @@
       ],
       "weights_external": true,
       "language": "en",
+      "languages": [
+        "en"
+      ],
       "min_os_version": "1.0.2",
       "min_ram_gb": 8.0
     },
@@ -530,7 +703,7 @@
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/svara-tts.hutashm",
-      "sha256": "e4de0986173bb179b2e0ffa4147e0b4bea49e7de51a5418df360352aa77fccce",
+      "sha256": "f087ad33c31eecf3090edce70dc668e55c1ae757db55d5b8b5fbff65cf90d68e",
       "name": "Svara TTS",
       "description": "Multilingual TTS for 19 Indian languages + Indian English, with emotion/style control.",
       "version": "1.0.4",
@@ -540,6 +713,12 @@
       "quality_score": 0.83,
       "speed": null,
       "modality": "tts",
+      "capabilities": [
+        {
+          "id": "tts",
+          "modality": "tts"
+        }
+      ],
       "hardware_label": "GPU (8GB+)",
       "internal": false,
       "hf_repo": "kenpath/svara-tts-v1",
@@ -555,14 +734,35 @@
         "model-00003-of-00003.safetensors"
       ],
       "weights_external": true,
-      "low_vram_capable": false
+      "low_vram_capable": false,
+      "languages": [
+        "hi",
+        "bn",
+        "mr",
+        "te",
+        "kn",
+        "bho",
+        "mag",
+        "hne",
+        "mai",
+        "as",
+        "brx",
+        "doi",
+        "gu",
+        "ml",
+        "pa",
+        "ta",
+        "ne",
+        "sa",
+        "en"
+      ]
     },
     {
       "id": "whisper-large-v3",
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/whisper-large-v3.hutashm",
-      "sha256": "f304cf5cd0935492036af7c5953765cde3acfde6e44b3769bcde34d3939d2bf2",
+      "sha256": "808d8d36dd51114e5371718048a1d1adaa3e7d501dc20ca3265ae677a7e23309",
       "name": "Whisper Large V3",
       "description": "High-accuracy multilingual transcription with optional word-level timestamps.",
       "version": "1.0.4",
@@ -572,12 +772,22 @@
       "quality_score": 0.95,
       "speed": null,
       "modality": "stt",
+      "capabilities": [
+        {
+          "id": "stt",
+          "modality": "stt"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": "Systran/faster-whisper-large-v3",
       "hf_revision": "edaa852ec7e145841d8ffdb056a99866b5f0a478",
       "allow_patterns": null,
       "weights_external": true,
+      "languages": [
+        "en",
+        "multilingual"
+      ],
       "min_os_version": "1.0.0"
     },
     {
@@ -585,7 +795,7 @@
       "type": "pipeline",
       "category": "audio",
       "hutash": "pipelines/whisper-tiny.hutashm",
-      "sha256": "0e06056ad95b01b17dbf06b0ad11530e728740799e2475237becb20db01535bb",
+      "sha256": "86cfd90d74b242f4ba2d066a611fcaeaf5fc596f55f369c3c3e778532a96ebe9",
       "name": "Whisper Tiny",
       "description": "Lightweight transcription model. Fast and efficient for basic use cases.",
       "version": "1.0.6",
@@ -595,12 +805,22 @@
       "quality_score": 0.65,
       "speed": null,
       "modality": "stt",
+      "capabilities": [
+        {
+          "id": "stt",
+          "modality": "stt"
+        }
+      ],
       "hardware_label": "CPU",
       "internal": true,
       "hf_repo": "Systran/faster-whisper-tiny",
       "hf_revision": "d90ca5fe260221311c53c58e660288d3deb8d356",
       "allow_patterns": null,
       "weights_external": true,
+      "languages": [
+        "en",
+        "multilingual"
+      ],
       "min_os_version": "1.0.0",
       "min_ram_gb": 1.0
     },
@@ -619,6 +839,7 @@
       "quality_score": null,
       "speed": null,
       "modality": "",
+      "capabilities": [],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": null,
@@ -629,9 +850,9 @@
     {
       "id": "hutash-podcast",
       "type": "application",
-      "category": "audio",
+      "category": "Audio Tools",
       "hutash": "apps/hutash-podcast.hutash",
-      "sha256": "0dc11cd51837a7b36fc98b61efa1d2bd0dae55c280df94e9810bad63b5b7af73",
+      "sha256": "190b0fe016917309fdac11d146aa8ab29b397cccd31d766c118ff326b02deab5",
       "name": "Hutash Podcast (Beta)",
       "description": "Turn podcast episodes into transcripts, show notes, and chapters",
       "version": "1.0.0",
@@ -641,6 +862,7 @@
       "quality_score": null,
       "speed": null,
       "modality": "",
+      "capabilities": [],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": null,
@@ -663,6 +885,7 @@
       "quality_score": null,
       "speed": null,
       "modality": "",
+      "capabilities": [],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": null,
@@ -675,7 +898,7 @@
       "type": "application",
       "category": "Video Tools",
       "hutash": "apps/hutash-subs.hutash",
-      "sha256": "8e65f472ee7d3c94a99609468166a464d6041170be3568351343fa96837143db",
+      "sha256": "afb369758fd2f5747acf624ab33f12a90355087f0587173ca921e9f5a48bb17a",
       "name": "Hutash Subs (Beta)",
       "description": "Transcribe and translate video subtitles locally using AI models",
       "version": "1.0.0",
@@ -685,6 +908,7 @@
       "quality_score": null,
       "speed": null,
       "modality": "",
+      "capabilities": [],
       "hardware_label": "CPU",
       "internal": false,
       "hf_repo": null,
