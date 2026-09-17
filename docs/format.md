@@ -1,8 +1,6 @@
 # The .hutash format
 
-A `.hutash` file is how every model, app and update reaches Hutash. This section documents the format as the engine actually parses it — where a specification document and the shipped packages differ, the shipped shape is what is described here.
-
-> **Conventions.** Fields marked *not documented* appear in real packages but no reader for them was found in the source that this documentation was written from. That is different from an optional field: an optional field has a defined default, an undocumented one has an unknown consumer. Treat it as provenance, not as behaviour you can rely on.
+A `.hutash` file is how every model, app and update reaches Hutash. This section documents the format as the engine parses it.
 
 ## Context: The three parts
 
@@ -10,7 +8,7 @@ They stack in this order, and each layer only knows the one below it.
 
 - **Hutash OS** — The window everything else runs inside. It lists the applications you have, installs new ones from a catalogue, and gives each one its tab.
 - **Hutash Studio** — The flagship application — one screen per kind of generation (speech, music, transcription, translation, chat), where you pick a model, fill in a form the model itself describes, and press Generate.
-- **The engine** — `hutashd` — no interface at all. It downloads model weights, builds each model its own Python environment, assigns every running thing a port, decides what fits in the graphics card's memory, and starts and stops model processes on demand.
+- **The engine** — `hutashd` — no interface at all. It downloads model weights, manages Python environments, ports, and GPU memory for you, and starts and stops model processes on demand.
 
 ## Definition: What a package is
 
@@ -77,23 +75,6 @@ hutash-subs.hutash (zip)
 ```
 
 Layout C is what the two shipped verticals contain. Against layout B, the differences to author for are: `application/config.yaml` rather than `application/config/app.yaml`; no `source:` block anywhere, because the code is inside the zip; a root `requirements.txt`, with `packages.yaml` reduced to a pointer at it; and a `ui:` block carrying only `display_name`, `icon` and `category` — store-listing data, not a control contract, and not read by the engine for an app.
-
-## Reference: What shipped packages actually contain
-
-Two shapes exist for several files: the one a specification document describes, and the one the engine's reader parses. Author against the right column — it is what installs. The left column is here so that a manifest written from the older document can be recognised and migrated, not as a list of faults.
-
-| Topic | Described in the spec | What ships and parses |
-|---|---|---|
-| `packages.yaml` shape | `packages: {gpu, cpu, common}`, `extra_index_urls`, `system: {apt}` | `python`, `common`, `variants.{gpu,cpu}.{packages,indexes}`, `system_packages` |
-| `launch.yaml` shape | `entrypoint`, `port`, `health`, `env` | `command`, `args`, `env`, `port`, `health_endpoint`, `health_timeout` |
-| `source:` location | `application/config/app.yaml` for applications | The same — and the engine's reader additionally parses a top-level `manifest.yaml` `source: {repo, commit}`, a second field with a different shape |
-| `ui:` on an application | Forbidden | Both verticals carry one, holding only `display_name`, `icon`, `category` |
-| Vertical layout | Not described | `application/config.yaml` + root `requirements.txt` + `vertical.yaml` + `workflows/` + `api/` + `dist/` |
-| `index.json` entries | Exactly four fields | Four identity fields plus a sixteen-field display summary, read from the manifest the index builder has already opened |
-| Control types | Five closed semantic types | Studio's linter enforces a fifteen-name registry; the spec's migration table maps between the two |
-| Package `id` | Generated from `naming:` | Assigned once and never regenerated — `kokoro` and `whisper-tiny` both diverge from what their own `naming:` block would produce |
-
-One planned change is recorded and has not shipped: in a future spec v2.0, `source:` moves out of `app.yaml` into `manifest.yaml` for every package type and becomes always-present, with a new `source.type: bundled` for self-contained packages, and `local` expected to become a legacy alias. Nothing in the current format depends on it.
 
 ## Continue: The rest of this section
 

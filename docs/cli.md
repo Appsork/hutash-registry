@@ -92,6 +92,10 @@ Aliases: `pull` = `install`, `rm` = `uninstall`.
 | hutash activity | Show recent activity |
 | hutash activity -f | Stream activity continuously |
 
+## Verticals: Subs and Podcast
+
+Subs and Podcast are applications, not model pipelines, so `hutash run` (above) doesn't reach them, and neither ships a `hutash` subcommand for running a workflow from the terminal. Open the app from Hutash OS to use it, or see the [MCP server](../mcp/) reference for the tools each one exposes to an MCP-compatible client.
+
 ## Projects and environment: Studio projects, and how the CLI finds the engine
 
 | Command | Description |

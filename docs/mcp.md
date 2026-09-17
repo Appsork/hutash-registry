@@ -73,3 +73,31 @@ Tool names follow the pattern `{model_id}_{capability}`. They appear automatical
 - The engine (hutashd) running
 - Models installed before their tools appear
 - An MCP server restart to pick up tools from a freshly installed model
+
+## Vertical workflow tools: Subs and Podcast
+
+Subs and Podcast are applications, not model pipelines. Once one is installed and running, each of its workflows is also available as an MCP tool — the same discoverability idea as the tools above, scoped to that app's own workflows. A tool's inputs and outputs match what its workflow declares, so an assistant sees the same fields a person filling in the app's own form would see.
+
+### Subs
+
+Transcribe and translate video subtitles locally using AI models.
+
+| Tool | Description |
+|---|---|
+| transcribe | Transcribe — media_file (required), source_language. Returns: Subtitles (srt, vtt, txt); Raw Segments (json) |
+| translate | Translate Subtitles — source_file (required), source_language, target_language (required). Returns: Translated Subtitles (srt, vtt, txt) |
+| transcribe_translate | Transcribe + Translate — media_file (required), source_language, target_language (required). Returns: Original Subtitles (srt, vtt, txt); Translated Subtitles (srt, vtt, txt); Translated Segments (json) |
+| render_styled | Render Styled Video — media_file (required), segments (required), style, platform, output_dir (required). Returns: Captioned Video (mp4); Styled Subtitles (ass) |
+
+### Podcast
+
+Turn podcast episodes into transcripts, show notes, and chapters.
+
+| Tool | Description |
+|---|---|
+| transcribe | Transcribe Episode — media_file (required). Returns: Transcript (srt, vtt, txt); Raw Segments (json) |
+| full_process | Full Episode Processing — media_file (required). Returns: Transcript (srt, vtt, txt); Show Notes (txt); Chapters (txt) |
+| notes_only | Show Notes from Audio — media_file (required). Returns: Show Notes (txt); Transcript (srt, vtt, txt) |
+| chapters_only | Chapters from Audio — media_file (required). Returns: Chapters (txt); Transcript (srt, vtt, txt) |
+| chapters | Generate Chapters — transcript (required). Returns: Chapters (txt) |
+| show_notes | Generate Show Notes — transcript (required). Returns: Show Notes (txt) |
