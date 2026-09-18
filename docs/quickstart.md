@@ -39,3 +39,7 @@ Linux and macOS support are coming soon.
 ## Models: What you can install
 
 Grouped by what they do. The [models page](../../models.html) lists sizes, hardware and licences in full.
+
+## Building your own
+
+Packaging a model or an app of your own? [Developer Mode](../developer-mode/index.html) lets you load a local package and test it before you publish anything.

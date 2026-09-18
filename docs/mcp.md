@@ -2,6 +2,8 @@
 
 Hutash ships an MCP server (`hutash-mcp`) that exposes your locally installed models as tools. Any MCP-compatible client — your MCP client, an MCP-compatible CLI, or other agents — can generate speech, music, voice clones, and transcriptions through your local models.
 
+Hutash's own built-in assistant reaches your models through this same server and the CLI — it has no privileged path of its own. Anything it can do is reproducible as a command, and anything you can script is something you can hand to it.
+
 ## Setup: Connecting a client
 
 The engine must be running and the models you want must already be installed.
