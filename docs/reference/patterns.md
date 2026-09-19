@@ -254,6 +254,30 @@ For a `formatter` step producing something beyond SRT/VTT/TXT/JSON — not a new
 
 ## Technique — app-specific backend logic vs. capability steps
 
+**Principle — decide by what the code IS before deciding how to call it:**
+
+| What it is | Where it lives |
+|---|---|
+| Trained weights, runs inference | A `.hutashm` model pipeline — engine-managed, shared across apps, GPU-aware. Called via a `type: capability` step, never a pip dependency inside your app. |
+| Deterministic tool, no model weights (ffmpeg, a codec, a CLI) | A sidecar bundled with the OS/engine, the way ffmpeg already is — `type: ffmpeg` if it's ffmpeg, otherwise a subprocess call from your own backend. |
+| App-specific logic, no AI in it (formatting, UI wiring, data transforms) | Code inside the app — a plain function, or the custom-route pattern below. |
+
+**Demucs (vocal separation) has trained neural network weights and runs
+GPU inference — it belongs in a `.hutashm` package, called through a
+`capability` step, exactly like any other model. It is NOT a line in
+`application/requirements.txt`.** A real, seen-in-production app got this
+wrong: it pip-installed `demucs` straight into its own backend venv,
+wired a UI toggle for it, and never actually called it from anywhere —
+no `.hutashm` package existed for the engine to resolve, no capability
+step referenced it, the toggle did nothing. The fix isn't "wire the
+toggle up" — Demucs was never something this app's own code should have
+been running in the first place.
+
+**ASS subtitle formatting, by contrast, is pure Python string
+manipulation — no model, no weights, no inference.** It belongs exactly
+where the technique above already puts it: code inside the app, via
+`register_format`.
+
 | What you need | Use |
 |---|---|
 | Call an installed AI model | `type: capability` step |
