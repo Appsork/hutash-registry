@@ -195,7 +195,7 @@ callers always resolve the endpoint from the manifest rather than
 guessing).
 
 This is the OTHER end of the resolution trace documented in full in
-`hutash-os`'s `docs/reference/application-authoring-reference.md` §2 —
+`hutash-os`'s `docs/reference/application-format.md` §2 —
 a vertical's `capabilities_needed` + `${settings.X_model}` resolves TO
 a package id, and that package's own `manifest.yaml.ui.capabilities`
 entry is what supplies the actual endpoint the resolved call hits.
@@ -492,7 +492,7 @@ about the internal structure changed; only the file's own extension,
 and the local install-time folder suffix the engine chooses to match it
 (`<PackagesDir>/<id>.hutashm` instead of `<id>.hutash`, decided by
 `packageDirExt(spec.Type)` reading the manifest's own `type:` field —
-see `package-type-distinction.md` in `hutash-os` for the full
+see `package-types.md` in `hutash-os` for the full
 mechanism).
 
 ```

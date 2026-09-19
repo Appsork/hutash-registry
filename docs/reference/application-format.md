@@ -30,7 +30,7 @@ this document adds:
    cross-checked against the loader/runner source (`hutash_workflow`),
    not inferred from one example.
 7. The **field-by-field `manifest.yaml` schema for an application**, at
-   the same detail level `model-pipeline-authoring-reference.md` gives
+   the same detail level `pipeline-format.md` gives
    the pipeline side — verified against the same shared Go parser, plus
    the separate `application/config/app.yaml` merge an application
    install actually goes through that a pipeline install never does.
@@ -547,7 +547,7 @@ not a change to the three-layer shape itself.
 
 For the `.hutash` vs `.hutashm` distinction (why an application stays
 `.hutash` while a model pipeline is now `.hutashm`), see
-`package-type-distinction.md` in this same directory.
+`package-types.md` in this same directory.
 
 ---
 
@@ -708,7 +708,7 @@ rejected at LOAD time, recursively, before anything runs.
 
 **`type` here is a different vocabulary from a model pipeline's
 `ui.capabilities.<name>.outputs.<name>.role: primary`**
-(`model-pipeline-authoring-reference.md` §6) — same word "primary" even,
+(`pipeline-format.md` §6) — same word "primary" even,
 but one is a workflow-output flag `_resolve_outputs`/`_transcript_output`
 actually check, the other is an opaque field inside a pipeline
 manifest's `ui:` tree that only Studio/a vertical interprets. A value
@@ -982,7 +982,7 @@ Annotated:
 **There is only one `manifest.yaml` parser in the engine.**
 `daemon/ext/packages/reader.go`'s `applyManifest()` → `PackageSpec`
 (`spec.go`) is the SAME function documented field-by-field in
-`model-pipeline-authoring-reference.md` §1 — `type: application` and
+`pipeline-format.md` §1 — `type: application` and
 `type: model_pipeline` are read by identical code. What differs between
 the two package types is which fields an application actually
 populates, and that installing an application additionally goes through
@@ -1015,7 +1015,7 @@ purposes, not one canonical parse feeding two subsystems.
 
 ### `manifest.yaml` — the shared parser's fields, applied to `type: application`
 
-(Same parser `model-pipeline-authoring-reference.md` §1 documents in
+(Same parser `pipeline-format.md` §1 documents in
 full; this table calls out what changes for an application.)
 
 | Field | Application usage |
@@ -1029,7 +1029,7 @@ full; this table calls out what changes for an application.)
 | `license` | Bare SPDX string — hutash-subs/podcast/dub all declare `MIT` here with no license TEXT anywhere in the package (a separately audited finding — see this workspace's `AGENTS.md`, Architecture Protection). |
 | `min_os_version` | Same as a pipeline — relayed, never compared, by design. |
 | `source` (`{repo, commit}`) | An application's actual code pin, for a git-sourced app. **Developer Mode always overwrites this** to `{type: local, path: <picked folder>}` regardless of what the file declares (`dev_packages.parse_local_application`) — loading a local folder always means "run THIS folder," never whatever the manifest's own `source:` says. |
-| `ui` (opaque map) | **Not the pipeline's UI contract.** `package-type-distinction.md` calls a `ui:`/`capabilities:` block "Forbidden" for an application — but the real, currently-shipped `hutash-subs/manifest.yaml` declares `ui: {display_name, icon, category}` anyway. The shared parser stores it into `PackageSpec.UI` regardless of type (nothing rejects it), and this session found no code path on the hutash-os side that reads those three keys back out for an app — an open question (consumed somewhere, or vestigial) rather than one resolved here. |
+| `ui` (opaque map) | **Not the pipeline's UI contract.** `package-types.md` calls a `ui:`/`capabilities:` block "Forbidden" for an application — but the real, currently-shipped `hutash-subs/manifest.yaml` declares `ui: {display_name, icon, category}` anyway. The shared parser stores it into `PackageSpec.UI` regardless of type (nothing rejects it), and this session found no code path on the hutash-os side that reads those three keys back out for an app — an open question (consumed somewhere, or vestigial) rather than one resolved here. |
 
 **`capabilities_needed` — a completely different mechanism, same file,
 unrelated to the Go parser above.** This is what a real application
@@ -1206,7 +1206,7 @@ load-bearing.
    simply never gates anything — see §6 above.
 
 8. **`hutash-subs/manifest.yaml` declares a `ui:` block
-   (`{display_name, icon, category}`) despite `package-type-distinction.md`
+   (`{display_name, icon, category}`) despite `package-types.md`
    calling `ui:`/`capabilities:` "Forbidden" for an application.** Nothing
    in the shared parser rejects it — `applyManifest` stores it into
    `PackageSpec.UI` unconditionally, regardless of `type:`. This session
@@ -1222,7 +1222,7 @@ load-bearing.
    things depending on package type**, despite the identical filename
    and identical position in the folder layout. A pipeline's version is
    a map (`python`/`common`/`variants`/`system_packages`,
-   `model-pipeline-authoring-reference.md` §1); an application's version
+   `pipeline-format.md` §1); an application's version
    (merged into `POST /apps/install`'s body by
    `dev_packages.parse_local_application`) is `requirements`/
    `extra_requirements`/`packages` (a flat list, optionally of richer
