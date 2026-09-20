@@ -94,16 +94,17 @@ table, including what's parsed but unused for an application:
 How the engine launches the app's backend process.
 
 ```yaml
-port: 0
 health: /health
 managed: true
-entrypoint: api/main.py
+entrypoint: python -m uvicorn api.main:app --host 127.0.0.1 --port 8080
+ports:
+  - internal: 8080
 ```
 
 | Field | Required? | Your options |
 |---|---|---|
-| `entrypoint` | not enforced at parse time, but the app won't start without it | The command/script the engine runs. `api/main.py` here assumes a `create_app(spec=SPEC)`-based Python backend (the framework every real shipped vertical uses) — see `reference/application-format.md` §"What the framework provides automatically" for what that gives you for free. |
-| `port` | no | `0` means "engine assigns one from its own pool" — the normal choice; every real shipped vertical uses `0`. A fixed number is legal but never needed. |
+| `entrypoint` | not enforced at parse time, but the app won't start without it | The FULL command the engine execs — never a bare script path. `hutashd` passes this string straight to `fork/exec` (`ext/appmanager`'s `parseEntrypoint`) with no interpreter of its own, so `entrypoint: api/main.py` fails immediately (`%1 is not a valid Win32 application` on Windows) — confirmed live, hutash-karaoke's first install. A first-party vertical's OWN repo looks like it gets away with the bare form because `hutash-os/scripts/stage-verticals.ps1` rewrites it into exactly this shape before that vertical is ever installed for real (see that script's own `application/config/app.yaml` generation). Developer Mode has no equivalent staging step — it installs your `application/config.yaml` verbatim — so write the full command yourself. `8080` above is an arbitrary placeholder; only `ports[].internal` matching the port literal in `entrypoint` matters, so the engine's `templatePort` can find and rewrite it to `{port}` at registration — the real port comes from the engine's pool at start time. |
+| `ports` | needed whenever `entrypoint` embeds a port number | A list of `{internal: N}` — `N` must equal the port literal in `entrypoint` exactly (same digits), or `templatePort` has nothing to match and your app starts pinned to whatever placeholder you wrote instead of the engine's real assignment. |
 | `health` | no | The health-check endpoint path. `/health` is what the shared framework serves automatically — leave it as-is unless you wrote a custom backend. |
 | `managed` | no | `true` for a first-party-style app using the shared framework (this one). Leave `false`/unset only for a genuinely third-party, unmanaged process. |
 
@@ -122,7 +123,7 @@ python: "3.12"
 
 | Field | Required? | Your options |
 |---|---|---|
-| `requirements` | no | Name of a `requirements.txt` your app ships (relative to `application/`), installed alongside the shared framework's own deps. |
+| `requirements` | no | Name of a `requirements.txt` your app ships (relative to `application/`). |
 | `python` | no | Interpreter version string. `"3.12"` matches every real shipped vertical. |
 
 This application-side `packages.yaml` is a **flat list/requirements
@@ -131,9 +132,26 @@ shape** — not the same schema as a model pipeline's own `packages.yaml`
 filename, two different schemas depending on package type — see
 `reference/package-types.md` if you want the full explanation.
 
-Also write `application/requirements.txt` with whatever your backend
-needs beyond the shared framework (often just empty, if you add nothing
-beyond `create_app`'s own dependencies).
+Also write `application/requirements.txt`. **`hutash_workflow` (the
+shared framework) is plain sys.path-imported source, not a pip-installed
+package — it has no dependency metadata of its own and installs nothing
+by itself.** Every app that calls `create_app()` must declare that
+function's own runtime dependencies directly, the same list every real
+shipped vertical repeats in its own `requirements.txt` (confirmed live,
+hutash-karaoke's second install failure — `No module named uvicorn`,
+after fixing the entrypoint above got the process to actually launch):
+
+```
+fastapi>=0.111.0
+uvicorn>=0.30.0
+httpx>=0.27.0
+pyyaml>=6.0
+pydantic>=2.7
+python-multipart>=0.0.9
+```
+
+Leave it at exactly that unless your backend imports something beyond
+`create_app` itself.
 
 ## Step 5 — `application/vertical.yaml`, one block at a time
 
@@ -343,6 +361,105 @@ setup:
       recommended_model: kokoro
 ```
 
+### 5f. `application/api/main.py` and `application/api/_bootstrap.py`
+
+Every other file in this tutorial is declarative — `vertical.yaml`
+describes the UI, the workflow YAML describes the pipeline, and the
+shared framework reads both. This is the one file with real code in it,
+and it is short: two calls, `configure` and `create_app`.
+
+`create_app` needs a real `VerticalSpec` object — not a plain dict. It
+reads `spec.root` directly, so `{"id": ..., "workflows_dir": ...}` fails
+at import time with `AttributeError: 'dict' object has no attribute
+'root'` (confirmed live, hutash-karaoke's third crash this session).
+`root` is this app's OWN directory — the one containing `application/`
+and `manifest.yaml` — so it's three `.parent` hops up from
+`application/api/main.py`:
+
+```python
+# application/api/main.py
+from pathlib import Path
+
+import api._bootstrap  # noqa: F401  — puts the OS packages on sys.path
+
+from hutash_workflow.server import create_app
+from hutash_workflow.server.config import VerticalSpec, configure
+
+SPEC = VerticalSpec(
+    app_id="hutash-say",
+    title="Hutash Say",
+    version="1.0.0",
+    root=Path(__file__).resolve().parent.parent.parent,
+    projects_folder="Hutash Say",
+    projects_env="HUTASH_SAY_PROJECTS_DIR",
+)
+configure(SPEC)
+
+app = create_app(spec=SPEC)
+```
+
+`import api._bootstrap` must come BEFORE `from hutash_workflow import
+...` — `hutash_workflow`/`hutash_vertical_ui` are plain sys.path-imported
+source from your hutash-os checkout, never pip-installed, so nothing puts
+them on the import path automatically. Without it: `ModuleNotFoundError:
+No module named 'hutash_workflow'` (karaoke's second crash). Copy this
+file verbatim into `application/api/_bootstrap.py` — it needs no changes
+per app:
+
+```python
+# application/api/_bootstrap.py
+"""Puts the OS-provided shared packages on the import path."""
+from __future__ import annotations
+
+import os
+import sys
+from pathlib import Path
+
+_SIBLING_LAYOUT = Path("..") / ".." / "hutash-os-files" / "hutash-os"
+
+
+def os_packages_dir() -> Path | None:
+    declared = os.environ.get("HUTASH_OS_PATH", "").strip()
+    candidates = []
+    if declared:
+        candidates.append(Path(declared) / "packages")
+    here = Path(__file__).resolve().parent.parent
+    candidates.append((here / _SIBLING_LAYOUT / "packages").resolve())
+    for candidate in candidates:
+        if (candidate / "hutash_workflow").is_dir():
+            return candidate
+    return None
+
+
+def install() -> Path:
+    found = os_packages_dir()
+    if found is None:
+        raise RuntimeError(
+            "the shared Hutash packages could not be found. Set HUTASH_OS_PATH "
+            "to your hutash-os checkout (the directory containing packages/)."
+        )
+    path = str(found)
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    return found
+
+
+install()
+```
+
+`_SIBLING_LAYOUT`'s guess only works when your app repo sits in the
+standard workspace layout, sibling to `hutash-os-files/`. A Developer
+Mode app living anywhere else (e.g. a scratch folder under
+`developer/apps/`) needs `HUTASH_OS_PATH` declared explicitly — set it in
+`application/config.yaml`'s `env` map (Step 3 above), not `env_vars`; see
+that step's own field table for why the key name matters.
+
+`register_format`, if your app needs a custom output format (an ASS
+subtitle document, say), is NOT exported from top-level
+`hutash_workflow` — import it from `hutash_workflow.steps.formatter_step`
+specifically. See `reference/patterns.md`'s "custom output format"
+technique for the full pattern.
+
 ## Step 6 — `application/workflows/speak.yaml`
 
 The one workflow: take the typed text, call an installed `text-to-speech` model,
@@ -406,20 +523,27 @@ auto-picking whatever's installed) resolve it to a real model at run time.
 
 Capability names follow **HuggingFace's own task taxonomy exactly** —
 hyphens, not underscores
-(https://huggingface.co/docs/transformers/main_classes/pipelines):
+(https://huggingface.co/docs/transformers/main_classes/pipelines).
 
-| Capability | What it does |
-|---|---|
-| `automatic-speech-recognition` | audio to text |
-| `text-to-speech` | text to audio |
-| `translation` | text to text, another language |
-| `text-to-image` | prompt to image |
-| `text-generation` | language model |
+**Before building, check what capabilities actually exist right now —
+don't assume:**
 
-Adding a model for a task not listed above? **Check HuggingFace's task list
-first.** If a matching task exists, use its exact name. Only invent a new
-capability name when HuggingFace genuinely has no equivalent — these have
-come up so far:
+```bash
+curl http://localhost:47990/catalogue
+```
+
+This returns every package — installed or not — with the capabilities
+each one declares. Your app needs a capability already in there? Use it
+directly, exactly as spelled in the response — no new package required.
+**Your app needs a capability that's NOT in the catalogue?** Building the
+application alone won't make it real — you also need a `.hutashm` model
+pipeline that provides it before any workflow step naming that capability
+can resolve to anything. See `reference/pipeline-format.md`.
+
+Adding a model for a task the catalogue has nothing for? **Check
+HuggingFace's task list first.** If a matching task exists, use its exact
+name. Only invent a new capability name when HuggingFace genuinely has no
+equivalent — these have come up so far:
 
 | Capability | What it does |
 |---|---|
