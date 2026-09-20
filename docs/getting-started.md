@@ -70,7 +70,7 @@ author: Your Name
 license: MIT
 
 capabilities_needed:
-  - tts
+  - text-to-speech
 ```
 
 | Field | Required? | Your options |
@@ -82,7 +82,7 @@ capabilities_needed:
 | `description` | no | One sentence. Falls back to `vertical.yaml`'s own `app.description` if that's set instead. |
 | `author` | no | Not read by anything — purely informational. |
 | `license` | no | A bare SPDX id (`MIT`, `Apache-2.0`, ...). No license *text* is required by this field — that's a separate concern if you want one. |
-| `capabilities_needed` | no, but load-bearing | A flat list of capability ids this app needs installed to work — `tts`, `stt`, `translate`, `llm`, `clone`, `music`, ... This is what gates first launch (the app won't open until at least one model for each listed capability is installed) and what the generated Models page groups by. **This is a different key from a model pipeline's `capabilities:` field** — don't confuse the two; see `reference/package-types.md` if you want the full explanation of why they're separate. |
+| `capabilities_needed` | no, but load-bearing | A flat list of capability ids this app needs installed to work — `text-to-speech`, `automatic-speech-recognition`, `translation`, `text-generation`, ... (the exact names — see "Capability names" after Step 6). This is what gates first launch (the app won't open until at least one model for each listed capability is installed) and what the generated Models page groups by. **This is a different key from a model pipeline's `capabilities:` field** — don't confuse the two; see `reference/package-types.md` if you want the full explanation of why they're separate. |
 
 Do not add a `ui:` or `capabilities:` block here — those belong to a
 model pipeline's manifest, not an application's. Full field-by-field
@@ -245,13 +245,13 @@ workflows:
 settings:
   tts_model:
     type: model_selector
-    capability: tts
+    capability: text-to-speech
     label: Voice Model
     description: Leave on Automatic to use the best installed model
 
 setup:
   required_capabilities:
-    - capability: tts
+    - capability: text-to-speech
       label: Text to Speech
       recommended_model: kokoro
 ```
@@ -332,20 +332,20 @@ workflows:
 settings:
   tts_model:
     type: model_selector
-    capability: tts
+    capability: text-to-speech
     label: Voice Model
     description: Leave on Automatic to use the best installed model
 
 setup:
   required_capabilities:
-    - capability: tts
+    - capability: text-to-speech
       label: Text to Speech
       recommended_model: kokoro
 ```
 
 ## Step 6 — `application/workflows/speak.yaml`
 
-The one workflow: take the typed text, call an installed `tts` model,
+The one workflow: take the typed text, call an installed `text-to-speech` model,
 hand back the audio file.
 
 ```yaml
@@ -367,7 +367,7 @@ steps:
   - id: generate
     name: Generate Speech
     type: capability
-    capability: tts
+    capability: text-to-speech
     model: ${settings.tts_model}
     input: ${inputs.text}
     params:
@@ -385,7 +385,7 @@ outputs:
 |---|---|
 | `inputs.text` / `inputs.voice` | Must match `vertical.yaml`'s `bind:` ids exactly (Step 5b) — this is the other half of the same contract. `required: true` on `text` means a run with nothing typed never reaches the model. |
 | `steps[0].type: capability` | The one step type that calls an installed model, through the engine's inference proxy. Five other step types exist for file conversion, format conversion, and composing workflows — full list and every field: `reference/application-format.md` §5. |
-| `model: ${settings.tts_model}` | Resolves to whatever the Settings page's "Voice Model" picker holds (Step 5d). Left on Automatic (empty), the step falls back to the first installed model that declares `tts` — never a hard failure as long as *something* is installed. |
+| `model: ${settings.tts_model}` | Resolves to whatever the Settings page's "Voice Model" picker holds (Step 5d). Left on Automatic (empty), the step falls back to the first installed model that declares `text-to-speech` — never a hard failure as long as *something* is installed. |
 | `params.voice` | Passed to the model alongside the text. The exact param name a model expects is declared in *that model's own manifest* (`kokoro`'s, if that's what's installed) — `voice` is what this tutorial assumes; if you picked a different TTS model, check its manifest before assuming the name matches. Full resolution mechanics: `reference/application-format.md` §2. |
 | `outputs.speech` | `type: file` because the model returns audio bytes, not text. `primary: true` marks it as the run's one deliverable — matters once a workflow has more than one output. `source: ${generate.output}` reads the `generate` step's raw result. |
 
@@ -393,6 +393,54 @@ Every `${...}` reference here is checked when the app loads: a typo'd
 input name, or a reference to a step that hasn't run yet, fails loudly
 at load time — before anyone presses the button. Full `${...}`
 resolution rules and every step type: `reference/application-format.md` §5.
+
+## Capability names — never a model, always a category
+
+`capability: text-to-speech` above names a *category of model*, never a
+specific one — that's the entire reason `type: capability` steps exist. A
+workflow that hardcoded `model: kokoro` would break the moment kokoro isn't
+installed, and it would ignore every other text-to-speech model a user has
+instead. Never reference a model by id in a workflow; always reference the
+capability it provides, and let `${settings.X_model}` (or an empty value,
+auto-picking whatever's installed) resolve it to a real model at run time.
+
+Capability names follow **HuggingFace's own task taxonomy exactly** —
+hyphens, not underscores
+(https://huggingface.co/docs/transformers/main_classes/pipelines):
+
+| Capability | What it does |
+|---|---|
+| `automatic-speech-recognition` | audio to text |
+| `text-to-speech` | text to audio |
+| `translation` | text to text, another language |
+| `text-to-image` | prompt to image |
+| `text-generation` | language model |
+
+Adding a model for a task not listed above? **Check HuggingFace's task list
+first.** If a matching task exists, use its exact name. Only invent a new
+capability name when HuggingFace genuinely has no equivalent — these have
+come up so far:
+
+| Capability | What it does |
+|---|---|
+| `audio-source-separation` | vocal/stem separation |
+| `object-detection` | detect objects in images |
+| `image-segmentation` | pixel-level image masks |
+| `image-to-image` | image transformation |
+| `summarization` | text condensation |
+| `depth-estimation` | image to depth map |
+
+**The engine accepts any string as a capability — there is no hardcoded
+list, and nothing validates a name against HuggingFace's taxonomy or
+against the registry's `index.json`** (verified directly against the Go
+engine's source: capability matching is a bare string-equality check
+against whatever each installed package's own manifest declares; the
+`index.json` `features`/`modalities` blocks are read as opaque data for
+website/Studio display only, never for validation). A capability is real
+the moment any installed package's manifest says so. The vocabulary above
+is real only because everyone adding a model agrees to use it — enforced
+by PR review, not by code, so get it right in review; the engine will not
+catch a typo'd or invented capability name for you.
 
 ## Step 7 — package it
 
@@ -421,7 +469,7 @@ The fastest loop while building: turn on Developer Mode in Hutash OS
 Settings, then use its "Load Application" picker on the unzipped
 `hutash-say/` folder directly — no zip, no publish step, and reloading
 after an edit just means picking the folder again. Once it opens, the
-first-launch screen should ask to install a `tts` model (Step 5d's
+first-launch screen should ask to install a `text-to-speech` model (Step 5d's
 `setup:` block) before showing the page built in Step 5.
 
 ## Where to go next
@@ -436,3 +484,60 @@ first-launch screen should ask to install a `tts` model (Step 5d's
 - **Every `vertical.yaml` key this tutorial didn't use** (multi-panel
   layouts, overlays with `confirm_leave`, persisted settings,
   `filter_by`/`describe_by` on a dropdown, ...): `reference/application-format.md` §1.
+
+## Testing loop — build, load, call, verify, without the UI
+
+Step 8's "Load Application" picker is the human way. An agent (or a
+script) drives the same load through hutash-os's own backend (port 8780,
+**not** the engine's 47990) — four endpoints, all under `/api/dev`:
+
+| Action | Endpoint |
+|---|---|
+| Load a `.hutash` application folder | `POST http://localhost:8780/api/dev/packages/app` — body `{"path": "<absolute folder path>"}` |
+| Load a `.hutashm` pipeline folder | `POST http://localhost:8780/api/dev/packages/model` — body `{"path": "<absolute folder path>"}` |
+| List currently-loaded dev packages | `GET http://localhost:8780/api/dev/packages` — `[{id, name, type: "app"\|"model", source_path}]` |
+| Remove a loaded dev package | `DELETE http://localhost:8780/api/dev/packages/{id}?type=app` (or `?type=model`) |
+
+```bash
+# Load hutash-say
+curl -X POST http://localhost:8780/api/dev/packages/app \
+  -H "Content-Type: application/json" \
+  -d '{"path": "E:/path/to/hutash-say"}'
+
+# List what's loaded
+curl http://localhost:8780/api/dev/packages
+
+# Remove it
+curl -X DELETE "http://localhost:8780/api/dev/packages/hutash-say?type=app"
+```
+
+The build-test loop:
+
+1. **Build the package files** — everything through Step 7 above.
+2. **`GET http://localhost:47990/health`** — engine alive? Returns
+   `{"status": "ok", "version": "..."}`. Nothing below works if this fails —
+   start the engine first.
+3. **Load it** — one of the two `POST /api/dev/packages/...` calls above,
+   pointed at your unzipped folder.
+4. **`GET http://localhost:47990/packages`** (needs
+   `Authorization: Bearer <token>` — read `api_token` from `hutashd.json`,
+   never hardcode it in a script) — confirm your package id is listed.
+5. **For a `.hutashm` pipeline:** call its capability directly —
+   `POST http://localhost:47990/packages/{id}/infer/{endpoint}`. The
+   endpoint comes from that model's own manifest
+   (`GET http://localhost:47990/packages/{id}/manifest`) — never assume it
+   matches the capability name (see `reference/application-format.md` §2).
+   Verify the response.
+6. **For a `.hutash` application:** find its assigned port first —
+   `GET http://localhost:47990/apps` lists every installed app with its
+   port — then `POST http://localhost:<app_port>/api/v1/workflows/{workflow_id}/run`
+   with your inputs (multipart for a file input, JSON otherwise). Verify
+   the streamed `result` event.
+7. **If it fails:** fix the files, reload (loading again over the same id
+   updates it — no need to remove first), retest. This loop is the entire
+   point of Developer Mode: no packaging, no publish step between edits.
+
+**MCP note:** the moment a package loads, every workflow it declares is
+also live as an MCP tool automatically — no separate registration step.
+An MCP-compatible client (or you, testing) can call the same workflow that
+way instead of a raw `run_workflow` POST.

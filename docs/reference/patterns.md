@@ -195,7 +195,7 @@ steps:
   - id: transcribe
     name: Transcribe
     type: capability
-    capability: stt
+    capability: automatic-speech-recognition
     model: ${settings.stt_model}          # empty = auto-pick an installed model
     input: ${extract_audio.output}        # <- chaining: previous step's result
     params: {word_timestamps: true}
@@ -309,6 +309,40 @@ app = create_app(spec=SPEC, custom_routers=[router])
 ```
 
 Call it from a widget or `action_button`, before or after `run_workflow`, never as a step inside it. Must it sit *between* two steps? No clean way exists today — run it first as its own request, hand the workflow the result as a `file`-typed input.
+
+---
+
+## Technique — naming a capability
+
+**Never reference a model by id in a workflow — reference the capability
+it provides.** `capability: kokoro` breaks the moment kokoro isn't
+installed and ignores every other model that could serve the same
+request; `capability: text-to-speech` (Pattern 3) resolves to whatever's
+actually installed, via `${settings.X_model}` or auto-pick.
+
+Capability names are **HuggingFace's own task taxonomy, hyphens not
+underscores** (https://huggingface.co/docs/transformers/main_classes/pipelines):
+
+| Capability | What it does |
+|---|---|
+| `automatic-speech-recognition` | audio to text |
+| `text-to-speech` | text to audio |
+| `translation` | text to text, another language |
+| `text-to-image` | prompt to image |
+| `text-generation` | language model |
+
+New task, not listed above? Check HuggingFace's task list first and use
+its exact name. Only invent one when HuggingFace has no equivalent — seen
+so far: `audio-source-separation`, `object-detection`,
+`image-segmentation`, `image-to-image`, `summarization`,
+`depth-estimation`.
+
+**The engine accepts any string — no hardcoded list, no validation against
+HuggingFace or `index.json`.** A capability is real the moment any
+installed package's manifest declares it (verified directly against the
+Go source: pure string equality, nothing else). The vocabulary holds
+together only because everyone adding a model agrees to use it — enforced
+in PR review, not by the engine.
 
 ---
 
