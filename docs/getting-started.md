@@ -1,303 +1,85 @@
-# Getting started — build a `.hutash` application
+# Getting started — modifying `template-app/` into your own app
 
-A step-by-step build of one real, minimal application: **Hutash Say**, a
-one-page app that turns typed text into a spoken audio file. Every file is
-shown in full — copy it, don't paraphrase it — and every field is listed
-with its real options, not just the one value this example picks.
+This is a **modification guide**, not a build-from-scratch tutorial.
+`AGENTS.md`'s own first instruction is: copy `template-app/` into
+`apps/<your-app-name>/`, then edit it. This doc explains what each file
+in that template does and how to change it — walking through one real
+modification (turning it into a translator) so you can see the pattern
+before you apply it to your own idea.
 
-This is a tutorial, not a reference. It teaches the shape by building one
-real thing. For the exhaustive field-by-field schema behind any step
-below, follow the `reference/*.md` link next to it. Read `AGENTS.md` first
-if you haven't — it explains what this file is for and what it isn't.
+If you haven't copied the template yet, do that first — everything below
+assumes you're looking at your own copy, not the pristine original.
 
-Works the same way for a human reading it and for an LLM following it: every
-step names the exact file, shows its exact full contents, and says exactly
-what changes if you want something different.
+## What the template is
 
-## What you're building
-
-An app with one page. A text box, a voice picker, a button, and a player
-for the result. Press the button, the engine's installed text-to-speech
-model turns the text into a WAV file, and the app plays it back. No
-projects, no multi-page navigation, no export formats — the smallest real
-thing that exercises the whole chain: an input, an action, a workflow, a
-capability call, and an output.
-
-Once this works, `reference/application-format.md` §3 walks through
-**hutash-subs** — a real, bigger, currently-shipped app (multi-page,
-projects, file uploads, an editor) — annotated the same way, for when you
-need more than this tutorial covers.
-
-## Step 0 — decide the package type
-
-Two package types exist: an **application** (`.hutash`) renders its own
-UI; a **model pipeline** (`.hutashm`) has none and is called through the
-engine's inference proxy. Hutash Say has a UI (a page, a button, a
-player), so it's an application. If what you're building has no UI of its
-own — it just takes input and returns output — stop here and read
-`reference/pipeline-format.md` instead; the two package types share
-almost nothing past the outer zip format. Full decision rule:
-`reference/package-types.md`.
-
-## Step 1 — the folder
+`template-app/` transcribes an audio file to text. One page: drop a file,
+press a button, get a timed transcript back. It uses exactly one
+capability (`stt`, already installed on a fresh machine via
+whisper-tiny) — the smallest real thing that still exercises the whole
+chain: an input, an action, a workflow, a capability call, and an output.
+Confirmed live: it dev-loads and opens with no errors exactly as it
+ships.
 
 ```
-hutash-say/
-  manifest.yaml
-  application/
-    config.yaml
-    packages.yaml
-    vertical.yaml
-    workflows/
-      speak.yaml
+template-app/
+├── manifest.yaml
+├── resources/
+│   └── icon.svg
+└── application/
+    ├── config.yaml
+    ├── packages.yaml
+    ├── requirements.txt
+    ├── vertical.yaml
+    ├── api/
+    │   ├── __init__.py
+    │   ├── _bootstrap.py
+    │   └── main.py
+    └── workflows/
+        └── transcribe.yaml
 ```
 
-Create `hutash-say/` and everything under it now; each step below writes
-one of these files in full.
+## The files, one by one
 
-## Step 2 — `manifest.yaml`
-
-The package's identity. Lives at the package root, one level above
-`application/`.
+### `manifest.yaml` — identity
 
 ```yaml
-id: hutash-say
-name: Hutash Say
+hutash_format: '1.0'
+id: hutash-template
+name: Hutash Template
 version: 1.0.0
 type: application
-description: Turn text into speech, locally
-author: Your Name
+description: Transcribe an audio file to text — the minimal template every new app starts from
 license: MIT
 
 capabilities_needed:
-  - text-to-speech
+  - stt
+
+ui:
+  display_name: Hutash Template
+  icon: resources/icon.svg
+  category: Utilities
 ```
 
-| Field | Required? | Your options |
-|---|---|---|
-| `id` | **yes** | Lowercase, hyphenated, globally unique among installed packages. This is the only field whose absence breaks the install outright. |
-| `name` | yes | Display name — shown in the app store, the window title. |
-| `version` | yes | Semver string, e.g. `1.0.0`. |
-| `type` | yes | `application` (or `app`) for this kind of package. `model_pipeline` (or `model`/`models`) is the other type — see Step 0. |
-| `description` | no | One sentence. Falls back to `vertical.yaml`'s own `app.description` if that's set instead. |
-| `author` | no | Not read by anything — purely informational. |
-| `license` | no | A bare SPDX id (`MIT`, `Apache-2.0`, ...). No license *text* is required by this field — that's a separate concern if you want one. |
-| `capabilities_needed` | no, but load-bearing | A flat list of capability ids this app needs installed to work — `text-to-speech`, `automatic-speech-recognition`, `translation`, `text-generation`, ... (the exact names — see "Capability names" after Step 6). This is what gates first launch (the app won't open until at least one model for each listed capability is installed) and what the generated Models page groups by. **This is a different key from a model pipeline's `capabilities:` field** — don't confuse the two; see `reference/package-types.md` if you want the full explanation of why they're separate. |
-
-Do not add a `ui:` or `capabilities:` block here — those belong to a
-model pipeline's manifest, not an application's. Full field-by-field
-table, including what's parsed but unused for an application:
+**Change for your app:** `id` (lowercase, hyphenated, globally unique —
+the only field whose absence breaks the install outright), `name`,
+`description`, `ui.display_name`, `ui.category`. **`capabilities_needed`
+is load-bearing** — it's the flat list of capability ids your app needs
+installed to work, and it's what gates first launch (the app won't open
+until at least one model for each listed capability is installed) and
+what the generated Models page groups by. Add or remove entries here to
+match whatever capabilities your workflows actually call — see
+"Capability names" below before inventing one. Full field table:
 `reference/application-format.md` §6.
 
-## Step 3 — `application/config.yaml`
-
-How the engine launches the app's backend process.
-
-```yaml
-health: /health
-managed: true
-entrypoint: python -m uvicorn api.main:app --host 127.0.0.1 --port 8080
-ports:
-  - internal: 8080
-```
-
-| Field | Required? | Your options |
-|---|---|---|
-| `entrypoint` | not enforced at parse time, but the app won't start without it | The FULL command the engine execs — never a bare script path. `hutashd` passes this string straight to `fork/exec` (`ext/appmanager`'s `parseEntrypoint`) with no interpreter of its own, so `entrypoint: api/main.py` fails immediately (`%1 is not a valid Win32 application` on Windows) — confirmed live, hutash-karaoke's first install. A first-party vertical's OWN repo looks like it gets away with the bare form because `hutash-os/scripts/stage-verticals.ps1` rewrites it into exactly this shape before that vertical is ever installed for real (see that script's own `application/config/app.yaml` generation). Developer Mode has no equivalent staging step — it installs your `application/config.yaml` verbatim — so write the full command yourself. `8080` above is an arbitrary placeholder; only `ports[].internal` matching the port literal in `entrypoint` matters, so the engine's `templatePort` can find and rewrite it to `{port}` at registration — the real port comes from the engine's pool at start time. |
-| `ports` | needed whenever `entrypoint` embeds a port number | A list of `{internal: N}` — `N` must equal the port literal in `entrypoint` exactly (same digits), or `templatePort` has nothing to match and your app starts pinned to whatever placeholder you wrote instead of the engine's real assignment. |
-| `health` | no | The health-check endpoint path. `/health` is what the shared framework serves automatically — leave it as-is unless you wrote a custom backend. |
-| `managed` | no | `true` for a first-party-style app using the shared framework (this one). Leave `false`/unset only for a genuinely third-party, unmanaged process. |
-
-`reference/application-format.md` §6 has the full field list (`workdir`,
-`env`, `packages` as a richer list-of-objects shape, `source`, `frozen`,
-`preserve`, `build`) for when your app needs more than these four.
-
-## Step 4 — `application/packages.yaml`
-
-Python dependencies.
-
-```yaml
-requirements: requirements.txt
-python: "3.12"
-```
-
-| Field | Required? | Your options |
-|---|---|---|
-| `requirements` | no | Name of a `requirements.txt` your app ships (relative to `application/`). |
-| `python` | no | Interpreter version string. `"3.12"` matches every real shipped vertical. |
-
-This application-side `packages.yaml` is a **flat list/requirements
-shape** — not the same schema as a model pipeline's own `packages.yaml`
-(which is a `python`/`common`/`variants`/`system_packages` map). Same
-filename, two different schemas depending on package type — see
-`reference/package-types.md` if you want the full explanation.
-
-Also write `application/requirements.txt`. **`hutash_workflow` (the
-shared framework) is plain sys.path-imported source, not a pip-installed
-package — it has no dependency metadata of its own and installs nothing
-by itself.** Every app that calls `create_app()` must declare that
-function's own runtime dependencies directly, the same list every real
-shipped vertical repeats in its own `requirements.txt` (confirmed live,
-hutash-karaoke's second install failure — `No module named uvicorn`,
-after fixing the entrypoint above got the process to actually launch):
-
-```
-fastapi>=0.111.0
-uvicorn>=0.30.0
-httpx>=0.27.0
-pyyaml>=6.0
-pydantic>=2.7
-python-multipart>=0.0.9
-```
-
-Leave it at exactly that unless your backend imports something beyond
-`create_app` itself.
-
-## Step 5 — `application/vertical.yaml`, one block at a time
-
-This is the whole frontend. Build it up piece by piece; the full file is
-assembled at the end of this step.
-
-### 5a. `app:` and `project:`
+### `application/vertical.yaml` — the whole frontend
 
 ```yaml
 app:
-  title: Hutash Say
-  description: Turn text into speech, locally
+  title: Hutash Template
+  description: Transcribe an audio file to text
 
 project:
-  subfolders: [audio]
-```
-
-`app.title`/`app.description` are the window/tab chrome. `project.subfolders`
-adds folders your workflows write into, beyond the framework's own
-default (`media`, `exports`) — this app writes generated audio into
-`audio/`.
-
-### 5b. The one page
-
-```yaml
-pages:
-  - id: home
-    label: Home
-    default: true
-    layout: single
-    widgets:
-      - type: section_header
-        position: main
-        props: {title: Say something}
-      - type: text_input
-        position: main
-        bind: text
-        props:
-          label: Text to speak
-          multiline: true
-          placeholder: Type or paste what you want spoken
-      - type: dropdown
-        position: main
-        bind: voice
-        props:
-          label: Voice
-          options_from: api:/available-voices
-      - type: action_button
-        position: main
-        props:
-          label: Generate speech
-          action: run_workflow
-          requires: [text]
-          workflow: speak
-      - type: progress_steps
-        position: main
-        props: {visible_during: workflow_run}
-      - type: output_player
-        position: main
-        props: {output: speech, label: Result}
-```
-
-| Page field | Your options |
-|---|---|
-| `layout` | `single` (used here — one column), `two-panel`, `three-panel`, `editor`. Anything else silently falls back to `single` — no error. Full layout rules: `reference/application-format.md` §1. |
-| `default` | `true` marks the landing page. Exactly one page should set this. |
-
-| Widget used | What it's for | Some other widgets you could reach for instead |
-|---|---|---|
-| `section_header` | A heading, optionally with an action button | — |
-| `text_input` | The text box. `bind: text` means its value fills the workflow input named `text` | `number_input`, `toggle`, `slider`, `file_upload` for other input shapes |
-| `dropdown` | The voice picker, populated live from the engine (`options_from: api:/available-voices`) rather than a hardcoded list | `model_selector` (picks an installed model directly, rather than an option the model serves) |
-| `action_button` | Runs the `speak` workflow, and stays disabled until `text` (its one `requires:` entry) is filled | — |
-| `progress_steps` | Shows step-by-step run progress while the workflow executes | `status_badge` for a simpler single-state indicator |
-| `output_player` | Plays the file the run produced (`speech`, matching the workflow's own output id — Step 6) | `audio_player` if you were playing an uploaded file instead of a run's output |
-
-**`bind:` is the entire data-binding mechanism.** A widget's `bind: text`
-means its value lands under the key `text` in the workflow's `inputs` —
-there is no separate mapping layer. The workflow you write in Step 6
-must declare an input with that exact id.
-
-Every widget type that exists, with every prop it reads: `reference/widgets.md`.
-
-### 5c. The Hanu block — copy this verbatim
-
-```yaml
-  - id: hanu
-    label: Hanu
-    overlay: true
-    overlay_size: md
-    layout: single
-    widgets:
-      - type: hanu_panel
-        position: main
-```
-
-This isn't part of Hutash Say's own design — it's required boilerplate.
-The assistant's *backend* is automatic for every app using the shared
-framework, but the page that hosts it in the UI is not generated yet, so
-every real shipped vertical declares exactly this block, unchanged. Add
-it as a second entry in `pages:`, right after `home`.
-
-### 5d. `workflows:`, `settings:`, `setup:`
-
-```yaml
-workflows:
-  - {id: speak, file: workflows/speak.yaml, label: Speak, icon: mic, description: Convert text to speech}
-
-settings:
-  tts_model:
-    type: model_selector
-    capability: text-to-speech
-    label: Voice Model
-    description: Leave on Automatic to use the best installed model
-
-setup:
-  required_capabilities:
-    - capability: text-to-speech
-      label: Text to Speech
-      recommended_model: kokoro
-```
-
-- `workflows:` is a lookup table from an id (what `action_button`'s
-  `workflow:` field names) to the YAML file that defines it — written in
-  Step 6.
-- `settings:` adds a "Voice Model" picker to the generated Settings page.
-  Its `type` could also be `dropdown`, `toggle`, or `folder_picker` — see
-  `reference/widgets.md`'s `settings_page` entry for all four and what
-  each is for. Left on "Automatic", the workflow resolves to whatever TTS
-  model is installed — see the next paragraph.
-- `setup:` only *labels* a capability `manifest.yaml`'s
-  `capabilities_needed` already declared — it cannot add a new
-  requirement, only describe one. `recommended_model` is offered first on
-  the first-launch install screen; omit it and the smallest compatible
-  model is offered instead. Mark an entry `optional: true` for a
-  capability your app can run without.
-
-### The complete file
-
-```yaml
-app:
-  title: Hutash Say
-  description: Turn text into speech, locally
-
-project:
-  subfolders: [audio]
+  subfolders: [audio, transcripts]
 
 pages:
   - id: home
@@ -305,76 +87,126 @@ pages:
     default: true
     layout: single
     widgets:
-      - type: section_header
-        position: main
-        props: {title: Say something}
-      - type: text_input
-        position: main
-        bind: text
-        props:
-          label: Text to speak
-          multiline: true
-          placeholder: Type or paste what you want spoken
+      - type: file_upload
+        bind: audio_file
+        props: {label: Drop an audio file here, accept: [audio/*]}
       - type: dropdown
-        position: main
-        bind: voice
-        props:
-          label: Voice
-          options_from: api:/available-voices
+        bind: source_language
+        props: {label: Spoken language, options_from: "workflow:transcribe.inputs.source_language"}
       - type: action_button
-        position: main
         props:
-          label: Generate speech
+          label: Transcribe
           action: run_workflow
-          requires: [text]
-          workflow: speak
+          requires: [audio_file]
+          workflow: transcribe
       - type: progress_steps
-        position: main
         props: {visible_during: workflow_run}
-      - type: output_player
-        position: main
-        props: {output: speech, label: Result}
-
-  - id: hanu
-    label: Hanu
-    overlay: true
-    overlay_size: md
-    layout: single
-    widgets:
-      - type: hanu_panel
-        position: main
+      - type: subtitle_list
+        props:
+          editable: true
+          show_timestamps: true
+          click_to_seek: false
+          save_path: transcripts/transcript.srt
+          working_path: transcripts/transcript.json
 
 workflows:
-  - {id: speak, file: workflows/speak.yaml, label: Speak, icon: mic, description: Convert text to speech}
+  - {id: transcribe, file: workflows/transcribe.yaml, label: Transcribe, icon: mic, description: Turn an audio file into a timed transcript}
 
 settings:
-  tts_model:
+  stt_model:
     type: model_selector
-    capability: text-to-speech
-    label: Voice Model
-    description: Leave on Automatic to use the best installed model
+    capability: stt
+    label: Transcription Model
+    description: Leave on Automatic to use the best installed transcription model
 
 setup:
   required_capabilities:
-    - capability: text-to-speech
-      label: Text to Speech
-      recommended_model: kokoro
+    - capability: stt
+      label: Transcription
+      recommended_model: whisper-tiny
 ```
 
-### 5f. `application/api/main.py` and `application/api/_bootstrap.py`
+**Change for your app:** `app.title`/`app.description`, `project.subfolders`
+(the folders a new project gets — match what your workflow actually
+writes), the `pages:` list (swap `file_upload`/`dropdown`/`subtitle_list`
+for whatever widgets your idea needs — full catalogue, every prop:
+`reference/widgets.md`), the `workflows:` list (one entry per workflow
+file you add under `application/workflows/`), and `settings:`/`setup:`
+(one `model_selector` + one `required_capabilities` entry per capability
+your workflows call — see the next section for why these two blocks must
+stay in step). **Do not** hand-write a `models`, `settings`, or `hanu`
+page — those are generated automatically from this file; see
+`AGENTS.md` §4 ("What the framework provides automatically") for the
+full list of what you never need to build yourself.
 
-Every other file in this tutorial is declarative — `vertical.yaml`
-describes the UI, the workflow YAML describes the pipeline, and the
-shared framework reads both. This is the one file with real code in it,
-and it is short: two calls, `configure` and `create_app`.
+### `application/workflows/transcribe.yaml` — the pipeline
 
-`create_app` needs a real `VerticalSpec` object — not a plain dict. It
-reads `spec.root` directly, so `{"id": ..., "workflows_dir": ...}` fails
-at import time with `AttributeError: 'dict' object has no attribute
-'root'` (confirmed live, hutash-karaoke's third crash this session).
-`root` is this app's OWN directory — the one containing `application/`
-and `manifest.yaml` — so it's three `.parent` hops up from
-`application/api/main.py`:
+```yaml
+id: transcribe
+name: Transcribe
+version: 1.0
+
+inputs:
+  audio_file:
+    type: file
+    accept: [audio/*]
+    label: Audio file
+    required: true
+  source_language:
+    type: dropdown
+    options:
+      - {value: auto, label: Auto Detect}
+      - {value: en, label: English}
+    default: auto
+    label: Spoken Language
+    required: false
+
+steps:
+  - id: transcribe
+    name: Transcribe Audio
+    type: capability
+    capability: stt
+    model: ${settings.stt_model}
+    input: ${inputs.audio_file}
+    params: {word_timestamps: true, language: "${inputs.source_language}"}
+
+outputs:
+  transcript:
+    type: subtitle_editor
+    source: ${transcribe.output}
+    label: Transcript
+    primary: true
+    formats: [srt, vtt, txt]
+    words_from: segments
+  segments:
+    type: file
+    source: ${transcribe.output}
+    formats: [json]
+    label: Transcript Segments (JSON)
+```
+
+**Change for your app:** `inputs:` (what your page collects — must match
+what `vertical.yaml`'s widgets `bind` to), `steps:` (one `type: capability`
+step per model call — **never** `model: whisper-tiny`, always
+`model: ${settings.<name>_model}`, resolved to whatever the user picked
+or, left on Automatic, whatever's installed — see "Capability names"
+below), and `outputs:` (what the page shows back). This is the one file
+most of your actual idea lives in. Full step-type reference (`ffmpeg`,
+`formatter`, `file_read`/`file_write`, a nested sub-`workflow`, beyond
+just `capability`): `reference/application-format.md` §2.
+
+### `application/config.yaml`, `application/packages.yaml`, `application/requirements.txt` — usually untouched
+
+These three declare how the engine launches your app and what Python
+packages it needs. Loaded through Developer Mode, `dev_stage()`
+(`hutash-os/api/services/dev_packages.py`) overwrites `config.yaml`'s
+`entrypoint`/`ports`/`health`/`managed` and tops up
+`requirements.txt`'s floor dependencies automatically, so **you don't
+need to touch any of these three files unless your app needs a package
+beyond `create_app` itself** (add it to `requirements.txt` — never
+remove the six already there) or a custom `env` var in `config.yaml`.
+
+### `application/api/main.py` — usually untouched
 
 ```python
 # application/api/main.py
@@ -384,142 +216,101 @@ import api._bootstrap  # noqa: F401  — puts the OS packages on sys.path
 
 from hutash_workflow.server import create_app
 from hutash_workflow.server.config import VerticalSpec, configure
+from hutash_workflow.server.workflow_source import declared_settings
+
+_ROOT = Path(__file__).resolve().parent.parent
+_VERTICAL_YAML = "vertical.yaml"
 
 SPEC = VerticalSpec(
-    app_id="hutash-say",
-    title="Hutash Say",
+    app_id="hutash-template",
+    title="Hutash Template",
     version="1.0.0",
-    root=Path(__file__).resolve().parent.parent.parent,
-    projects_folder="Hutash Say",
-    projects_env="HUTASH_SAY_PROJECTS_DIR",
+    root=_ROOT,
+    vertical_yaml=_VERTICAL_YAML,
+    workflows_dir="workflows",
+    projects_folder="Hutash Template",
+    projects_env="HUTASH_TEMPLATE_PROJECTS_DIR",
+    default_settings=declared_settings(_ROOT / _VERTICAL_YAML),
 )
 configure(SPEC)
 
 app = create_app(spec=SPEC)
 ```
 
-`import api._bootstrap` must come BEFORE `from hutash_workflow import
-...` — `hutash_workflow`/`hutash_vertical_ui` are plain sys.path-imported
-source from your hutash-os checkout, never pip-installed, so nothing puts
-them on the import path automatically. Without it: `ModuleNotFoundError:
-No module named 'hutash_workflow'` (karaoke's second crash). Copy this
-file verbatim into `application/api/_bootstrap.py` — it needs no changes
-per app:
+Two calls — `configure` and `create_app` — and nothing else, because
+`create_app()` provides everything else your app needs (project
+management, workflow execution, Settings, the Models page, Hanu, auth,
+static hosting) without you declaring it. `default_settings=
+declared_settings(...)` is why `${settings.stt_model}` in the workflow
+above actually resolves: `declared_settings()` reads `vertical.yaml`'s
+`settings:` block straight into the runtime values dict, so **every
+setting you add to `vertical.yaml` is automatically resolvable — you
+never edit this file just because you added a setting.**
 
-```python
-# application/api/_bootstrap.py
-"""Puts the OS-provided shared packages on the import path."""
-from __future__ import annotations
+**Change `app_id`/`title`/`projects_folder`/`projects_env`** to match
+your app (keep `projects_env` unique — it's the environment variable a
+user can set to relocate their projects folder). **Edit the rest of this
+file only if you need a custom output format** (an ASS subtitle
+document, a non-standard export) — `register_format`, imported from
+`hutash_workflow.steps.formatter_step` specifically (not top-level
+`hutash_workflow`), registers one; see `reference/patterns.md`'s "custom
+output format" technique for the full pattern. Everything about *why*
+`root` is computed this exact way (two `.parent` hops, not three) is in
+this file's own comments — read them before changing it, since getting
+it wrong doesn't fail cleanly (see that comment for what actually
+breaks).
 
-import os
-import sys
-from pathlib import Path
+### `application/api/_bootstrap.py` — never touched
 
-_SIBLING_LAYOUT = Path("..") / ".." / "hutash-os-files" / "hutash-os"
+Puts `hutash_workflow`/`hutash_vertical_ui` on the import path. Copy it
+verbatim into any new app — it needs no changes per app, and
+`dev_stage()` writes it automatically if you delete it.
 
+## Worked example: turning the template into a translator
 
-def os_packages_dir() -> Path | None:
-    declared = os.environ.get("HUTASH_OS_PATH", "").strip()
-    candidates = []
-    if declared:
-        candidates.append(Path(declared) / "packages")
-    here = Path(__file__).resolve().parent.parent
-    candidates.append((here / _SIBLING_LAYOUT / "packages").resolve())
-    for candidate in candidates:
-        if (candidate / "hutash_workflow").is_dir():
-            return candidate
-    return None
+Say you want a text translator instead: paste text in, pick a target
+language, get translated text back. Same shape, different capability.
 
+1. **`manifest.yaml`**: change `id: hutash-translate`, `name`,
+   `description`; `capabilities_needed: [translation]` (HuggingFace's
+   task name for this — see "Capability names" below).
+2. **`application/vertical.yaml`**: swap the `file_upload` widget for a
+   `text_input` (`bind: source_text`), add a `dropdown` for the target
+   language (`bind: target_language`); change `settings:` from
+   `stt_model` to `translation_model` (`capability: translation`); change
+   `setup.required_capabilities` to match.
+3. **`application/workflows/transcribe.yaml`** → rename to
+   `translate.yaml`, update the `id`/`name`, change `inputs:` to
+   `source_text`/`target_language`, change the step's `capability: stt`
+   to `capability: translation`, `model: ${settings.translation_model}`,
+   and its `params:` to whatever that capability's models expect
+   (check an installed translation model's own manifest for its accepted
+   params — `GET /packages/{id}/manifest`). Change `outputs:` from a
+   `subtitle_editor` to a plain `type: file`/text result.
+4. **`application/vertical.yaml`**'s `workflows:` list: point at
+   `workflows/translate.yaml` with the new id.
+5. **`application/api/main.py`**: only `app_id`/`title`/
+   `projects_folder`/`projects_env` change — nothing else, since there's
+   still no custom output format.
 
-def install() -> Path:
-    found = os_packages_dir()
-    if found is None:
-        raise RuntimeError(
-            "the shared Hutash packages could not be found. Set HUTASH_OS_PATH "
-            "to your hutash-os checkout (the directory containing packages/)."
-        )
-    path = str(found)
-    if path not in sys.path:
-        sys.path.insert(0, path)
-    return found
-
-
-install()
-```
-
-`_SIBLING_LAYOUT`'s guess only works when your app repo sits in the
-standard workspace layout, sibling to `hutash-os-files/`. A Developer
-Mode app living anywhere else (e.g. a scratch folder under
-`developer/apps/`) needs `HUTASH_OS_PATH` declared explicitly — set it in
-`application/config.yaml`'s `env` map (Step 3 above), not `env_vars`; see
-that step's own field table for why the key name matters.
-
-`register_format`, if your app needs a custom output format (an ASS
-subtitle document, say), is NOT exported from top-level
-`hutash_workflow` — import it from `hutash_workflow.steps.formatter_step`
-specifically. See `reference/patterns.md`'s "custom output format"
-technique for the full pattern.
-
-## Step 6 — `application/workflows/speak.yaml`
-
-The one workflow: take the typed text, call an installed `text-to-speech` model,
-hand back the audio file.
-
-```yaml
-id: speak
-name: Speak
-version: 1.0
-
-inputs:
-  text:
-    type: text
-    label: Text to speak
-    required: true
-  voice:
-    type: dropdown
-    label: Voice
-    required: false
-
-steps:
-  - id: generate
-    name: Generate Speech
-    type: capability
-    capability: text-to-speech
-    model: ${settings.tts_model}
-    input: ${inputs.text}
-    params:
-      voice: ${inputs.voice}
-
-outputs:
-  speech:
-    type: file
-    source: ${generate.output}
-    label: Generated Speech
-    primary: true
-```
-
-| Piece | What's happening |
-|---|---|
-| `inputs.text` / `inputs.voice` | Must match `vertical.yaml`'s `bind:` ids exactly (Step 5b) — this is the other half of the same contract. `required: true` on `text` means a run with nothing typed never reaches the model. |
-| `steps[0].type: capability` | The one step type that calls an installed model, through the engine's inference proxy. Five other step types exist for file conversion, format conversion, and composing workflows — full list and every field: `reference/application-format.md` §5. |
-| `model: ${settings.tts_model}` | Resolves to whatever the Settings page's "Voice Model" picker holds (Step 5d). Left on Automatic (empty), the step falls back to the first installed model that declares `text-to-speech` — never a hard failure as long as *something* is installed. |
-| `params.voice` | Passed to the model alongside the text. The exact param name a model expects is declared in *that model's own manifest* (`kokoro`'s, if that's what's installed) — `voice` is what this tutorial assumes; if you picked a different TTS model, check its manifest before assuming the name matches. Full resolution mechanics: `reference/application-format.md` §2. |
-| `outputs.speech` | `type: file` because the model returns audio bytes, not text. `primary: true` marks it as the run's one deliverable — matters once a workflow has more than one output. `source: ${generate.output}` reads the `generate` step's raw result. |
-
-Every `${...}` reference here is checked when the app loads: a typo'd
-input name, or a reference to a step that hasn't run yet, fails loudly
-at load time — before anyone presses the button. Full `${...}`
-resolution rules and every step type: `reference/application-format.md` §5.
+An image generator follows the identical pattern: `capability:
+text-to-image`, a `text_input` for the prompt, an `image_display` output
+widget instead of `subtitle_editor`. The shape — manifest declares the
+capability, `vertical.yaml` collects input and shows output, the
+workflow calls the capability by name, settings resolve which model —
+never changes; only the capability name, the widgets, and the workflow's
+`params:` do.
 
 ## Capability names — never a model, always a category
 
-`capability: text-to-speech` above names a *category of model*, never a
-specific one — that's the entire reason `type: capability` steps exist. A
-workflow that hardcoded `model: kokoro` would break the moment kokoro isn't
-installed, and it would ignore every other text-to-speech model a user has
-instead. Never reference a model by id in a workflow; always reference the
-capability it provides, and let `${settings.X_model}` (or an empty value,
-auto-picking whatever's installed) resolve it to a real model at run time.
+`capability: stt` above names a *category of model*, never a specific
+one — that's the entire reason `type: capability` steps exist. A
+workflow that hardcoded `model: whisper-tiny` would break the moment
+that model isn't installed, and it would ignore every other
+speech-to-text model a user has instead. Never reference a model by id
+in a workflow; always reference the capability it provides, and let
+`${settings.X_model}` (or an empty value, auto-picking whatever's
+installed) resolve it to a real model at run time.
 
 Capability names follow **HuggingFace's own task taxonomy exactly** —
 hyphens, not underscores
@@ -535,10 +326,10 @@ curl http://localhost:47990/catalogue
 This returns every package — installed or not — with the capabilities
 each one declares. Your app needs a capability already in there? Use it
 directly, exactly as spelled in the response — no new package required.
-**Your app needs a capability that's NOT in the catalogue?** Building the
-application alone won't make it real — you also need a `.hutashm` model
-pipeline that provides it before any workflow step naming that capability
-can resolve to anything. See `reference/pipeline-format.md`.
+**Your app needs a capability that's NOT in the catalogue?** Changing
+the application alone won't make it real — you also need a `.hutashm`
+model pipeline that provides it before any workflow step naming that
+capability can resolve to anything. See `reference/pipeline-format.md`.
 
 Adding a model for a task the catalogue has nothing for? **Check
 HuggingFace's task list first.** If a matching task exists, use its exact
@@ -566,54 +357,27 @@ is real only because everyone adding a model agrees to use it — enforced
 by PR review, not by code, so get it right in review; the engine will not
 catch a typo'd or invented capability name for you.
 
-## Step 7 — package it
-
-```
-hutash-say.hutash (zip)/
-├── manifest.yaml
-└── application/
-    ├── config.yaml
-    ├── packages.yaml
-    ├── vertical.yaml
-    ├── requirements.txt
-    └── workflows/
-        └── speak.yaml
-```
-
-Zip the `hutash-say/` folder's contents (not the folder itself) into
-`hutash-say.hutash`. No `resources/` folder, no `launch.yaml` — both are
-model-pipeline-only; an application's launch info lives in
-`application/config.yaml`, already written in Step 3. Full container
-format (why it's a plain zip, what the three layers are, what's forbidden
-for each package type): `reference/hutash-format.md`.
-
-## Step 8 — try it
-
-The fastest loop while building: turn on Developer Mode in Hutash OS
-Settings, then use its "Load Application" picker on the unzipped
-`hutash-say/` folder directly — no zip, no publish step, and reloading
-after an edit just means picking the folder again. Once it opens, the
-first-launch screen should ask to install a `text-to-speech` model (Step 5d's
-`setup:` block) before showing the page built in Step 5.
-
 ## Where to go next
 
 - **A bigger application** (multiple pages, projects, file uploads, an
   editor): `reference/application-format.md` §3, the hutash-subs worked
   example, annotated in full.
 - **A model pipeline instead** (no UI, called by other apps):
-  `reference/pipeline-format.md`, starting from Step 0 above.
-- **A specific widget's full prop list**, beyond what Step 5b's table
-  covers: `reference/widgets.md`.
-- **Every `vertical.yaml` key this tutorial didn't use** (multi-panel
+  `reference/pipeline-format.md`.
+- **A specific widget's full prop list**, beyond what the template uses:
+  `reference/widgets.md`.
+- **Every `vertical.yaml` key the template doesn't use** (multi-panel
   layouts, overlays with `confirm_leave`, persisted settings,
   `filter_by`/`describe_by` on a dropdown, ...): `reference/application-format.md` §1.
 
 ## Testing loop — build, load, call, verify, without the UI
 
-Step 8's "Load Application" picker is the human way. An agent (or a
-script) drives the same load through hutash-os's own backend (port 8780,
-**not** the engine's 47990) — four endpoints, all under `/api/dev`:
+Turning on Developer Mode in Hutash OS Settings and using its "Load
+Application" picker on your app folder directly is the human way — no
+zip, no publish step, and reloading after an edit just means picking the
+folder again. An agent (or a script) drives the same load through
+hutash-os's own backend (port 8780, **not** the engine's 47990) — four
+endpoints, all under `/api/dev`:
 
 | Action | Endpoint |
 |---|---|
@@ -623,26 +387,26 @@ script) drives the same load through hutash-os's own backend (port 8780,
 | Remove a loaded dev package | `DELETE http://localhost:8780/api/dev/packages/{id}?type=app` (or `?type=model`) |
 
 ```bash
-# Load hutash-say
+# Load your copy of the template
 curl -X POST http://localhost:8780/api/dev/packages/app \
   -H "Content-Type: application/json" \
-  -d '{"path": "E:/path/to/hutash-say"}'
+  -d '{"path": "E:/path/to/apps/my-app"}'
 
 # List what's loaded
 curl http://localhost:8780/api/dev/packages
 
 # Remove it
-curl -X DELETE "http://localhost:8780/api/dev/packages/hutash-say?type=app"
+curl -X DELETE "http://localhost:8780/api/dev/packages/my-app?type=app"
 ```
 
 The build-test loop:
 
-1. **Build the package files** — everything through Step 7 above.
+1. **Copy and edit the template** — the steps at the top of this doc.
 2. **`GET http://localhost:47990/health`** — engine alive? Returns
    `{"status": "ok", "version": "..."}`. Nothing below works if this fails —
    start the engine first.
-3. **Load it** — one of the two `POST /api/dev/packages/...` calls above,
-   pointed at your unzipped folder.
+3. **Load it** — the `POST /api/dev/packages/app` call above, pointed at
+   your app folder.
 4. **`GET http://localhost:47990/packages`** (needs
    `Authorization: Bearer <token>` — read `api_token` from `hutashd.json`,
    never hardcode it in a script) — confirm your package id is listed.
@@ -663,5 +427,5 @@ The build-test loop:
 
 **MCP note:** the moment a package loads, every workflow it declares is
 also live as an MCP tool automatically — no separate registration step.
-An MCP-compatible client (or you, testing) can call the same workflow that
-way instead of a raw `run_workflow` POST.
+An MCP-compatible client (or you, testing) can call the same workflow
+this way instead of the HTTP endpoint above.
