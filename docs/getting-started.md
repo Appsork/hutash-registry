@@ -167,8 +167,7 @@ steps:
     type: capability
     capability: stt
     model: ${settings.stt_model}
-    input: ${inputs.audio_file}
-    params: {word_timestamps: true, language: "${inputs.source_language}"}
+    params: {file: "${inputs.audio_file}", word_timestamps: true, language: "${inputs.source_language}"}
 
 outputs:
   transcript:
@@ -272,31 +271,37 @@ Say you want a text translator instead: paste text in, pick a target
 language, get translated text back. Same shape, different capability.
 
 1. **`manifest.yaml`**: change `id: hutash-translate`, `name`,
-   `description`; `capabilities_needed: [translation]` (HuggingFace's
-   task name for this — see "Capability names" below).
+   `description`; `capabilities_needed: [translate]`.
 2. **`application/vertical.yaml`**: swap the `file_upload` widget for a
    `text_input` (`bind: source_text`), add a `dropdown` for the target
    language (`bind: target_language`); change `settings:` from
-   `stt_model` to `translation_model` (`capability: translation`); change
+   `stt_model` to `translate_model` (`capability: translate`); change
    `setup.required_capabilities` to match.
 3. **`application/workflows/transcribe.yaml`** → rename to
    `translate.yaml`, update the `id`/`name`, change `inputs:` to
    `source_text`/`target_language`, change the step's `capability: stt`
-   to `capability: translation`, `model: ${settings.translation_model}`,
-   and its `params:` to whatever that capability's models expect
-   (check an installed translation model's own manifest for its accepted
-   params — `GET /packages/{id}/manifest`). Change `outputs:` from a
-   `subtitle_editor` to a plain `type: file`/text result.
+   to `capability: translate`, `model: ${settings.translate_model}`, and
+   its `params:` to the names `translate` takes — they are the same for
+   every translation model (`reference/capability-interfaces.md`):
+
+   ```yaml
+   params:
+     text: ${inputs.source_text}
+     target_lang: ${inputs.target_language}
+   ```
+
+   Change `outputs:` from a `subtitle_editor` to a plain `type: file`/text
+   result.
 4. **`application/vertical.yaml`**'s `workflows:` list: point at
    `workflows/translate.yaml` with the new id.
 5. **`application/api/main.py`**: only `app_id`/`title`/
    `projects_folder`/`projects_env` change — nothing else, since there's
    still no custom output format.
 
-An image generator follows the identical pattern: `capability:
-text-to-image`, a `text_input` for the prompt, an `image_display` output
-widget instead of `subtitle_editor`. The shape — manifest declares the
-capability, `vertical.yaml` collects input and shows output, the
+An image generator follows the identical pattern: `capability: image`, a
+`text_input` for the prompt (`params: {prompt: ...}`), an `image_display`
+output widget instead of `subtitle_editor`. The shape — manifest declares
+the capability, `vertical.yaml` collects input and shows output, the
 workflow calls the capability by name, settings resolve which model —
 never changes; only the capability name, the widgets, and the workflow's
 `params:` do.
@@ -312,9 +317,12 @@ in a workflow; always reference the capability it provides, and let
 `${settings.X_model}` (or an empty value, auto-picking whatever's
 installed) resolve it to a real model at run time.
 
-Capability names follow **HuggingFace's own task taxonomy exactly** —
-hyphens, not underscores
-(https://huggingface.co/docs/transformers/main_classes/pipelines).
+A capability is named by its **short id**: `stt`, `tts`, `translate`,
+`image`, `llm`, `audio-sep`, `music`, `voice-clone`. Each has
+one fixed set of input and output names, the same for every model that
+provides it — `reference/capability-interfaces.md` is the list, and a
+`type: capability` step passes its parameters by those names under
+`params:`.
 
 **Before building, check what capabilities actually exist right now —
 don't assume:**
@@ -330,32 +338,18 @@ directly, exactly as spelled in the response — no new package required.
 the application alone won't make it real — you also need a `.hutashm`
 model pipeline that provides it before any workflow step naming that
 capability can resolve to anything. See `reference/pipeline-format.md`.
-
-Adding a model for a task the catalogue has nothing for? **Check
-HuggingFace's task list first.** If a matching task exists, use its exact
-name. Only invent a new capability name when HuggingFace genuinely has no
-equivalent — these have come up so far:
-
-| Capability | What it does |
-|---|---|
-| `audio-source-separation` | vocal/stem separation |
-| `object-detection` | detect objects in images |
-| `image-segmentation` | pixel-level image masks |
-| `image-to-image` | image transformation |
-| `summarization` | text condensation |
-| `depth-estimation` | image to depth map |
+A genuinely new capability gets a short lowercase id and its inputs and
+outputs added to `reference/capability-interfaces.md` in the same change.
 
 **The engine accepts any string as a capability — there is no hardcoded
-list, and nothing validates a name against HuggingFace's taxonomy or
-against the registry's `index.json`** (verified directly against the Go
-engine's source: capability matching is a bare string-equality check
-against whatever each installed package's own manifest declares; the
-`index.json` `features`/`modalities` blocks are read as opaque data for
-website/Studio display only, never for validation). A capability is real
-the moment any installed package's manifest says so. The vocabulary above
-is real only because everyone adding a model agrees to use it — enforced
-by PR review, not by code, so get it right in review; the engine will not
-catch a typo'd or invented capability name for you.
+list, and nothing validates a name against `index.json`** (verified
+directly against the Go engine's source: capability matching is a bare
+string-equality check against whatever each installed package's own
+manifest declares; the `index.json` `features`/`modalities` blocks are
+read as opaque data for website/Studio display only, never for
+validation). A capability is real the moment any installed package's
+manifest says so, and the engine will not catch a typo'd or invented
+capability name for you — which is why the names are fixed in one list.
 
 ## Where to go next
 

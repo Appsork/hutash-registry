@@ -182,6 +182,15 @@ relative to what a client would actually download.
 
 ## 4. Capability declaration — how a pipeline says "I provide X"
 
+**Which names a capability uses is fixed, not chosen.** Every model that
+declares `stt`, `tts`, `translate`, `image`, `llm`, `audio-sep`,
+`music` or `voice-clone` takes and returns the parameter names listed in
+`capability-interfaces.md` (for example `translate` takes `text`,
+`source_lang`, `target_lang` and returns `text`). A pipeline whose manifest
+or `@capability` method uses another name for the same thing is not
+conformant, and a workflow written against the standard will be refused when
+it meets it.
+
 `manifest.yaml`'s `ui.capabilities` block (§1's `ui` field, opaque to
 the engine, interpreted by Studio/verticals/CLI/MCP) is a **map keyed
 by capability id** — `capabilities: {translate: {...}}`, not a list —
@@ -358,18 +367,18 @@ ui:
           max_length: 5000
           clear_after_generate: true
       controls:
-        source_language:
+        source_lang:
           type: enum
           label: Source language
           default: en
           options: [{value: en, label: English}]
-        target_language:
+        target_lang:
           type: enum
           label: Target language
           default: hi
           options: [{value: hi, label: Hindi}]
       outputs:
-        translated_text: {type: text, role: primary}
+        text: {type: text, role: primary}
   hardware: {min_vram_gb: 0, recommended_vram_gb: 0, supports_cpu: true, total_install_gb: 1}
   tagline: "Opus-MT — lightweight CPU English-to-Hindi translation"
   creator:
@@ -394,7 +403,7 @@ Annotated:
   before the model ever ran, on the legitimate call that used the
   other. The "exactly one" rule lives in the one place that actually
   knows it: the inference code itself.
-- **`controls.source_language`/`target_language` each have exactly one
+- **`controls.source_lang`/`target_lang` each have exactly one
   option** — this model translates one fixed language pair, but still
   declares both controls (rather than omitting them) so it presents
   the same Source/Target pair every "translate"-capability model shows

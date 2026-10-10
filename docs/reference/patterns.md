@@ -195,10 +195,11 @@ steps:
   - id: transcribe
     name: Transcribe
     type: capability
-    capability: automatic-speech-recognition
+    capability: stt
     model: ${settings.stt_model}          # empty = auto-pick an installed model
-    input: ${extract_audio.output}        # <- chaining: previous step's result
-    params: {word_timestamps: true}
+    # Everything goes by name under `params:`, using the standard names in
+    # capability-interfaces.md. `file:` chains the previous step's result.
+    params: {file: "${extract_audio.output}", word_timestamps: true}
   # Step 3: reuse a WHOLE other workflow as one step (composition)
   - id: translate_step
     name: Translate
@@ -317,32 +318,43 @@ Call it from a widget or `action_button`, before or after `run_workflow`, never 
 **Never reference a model by id in a workflow — reference the capability
 it provides.** `capability: kokoro` breaks the moment kokoro isn't
 installed and ignores every other model that could serve the same
-request; `capability: text-to-speech` (Pattern 3) resolves to whatever's
-actually installed, via `${settings.X_model}` or auto-pick.
+request; `capability: tts` (Pattern 3) resolves to whatever's actually
+installed, via `${settings.X_model}` or auto-pick.
 
-Capability names are **HuggingFace's own task taxonomy, hyphens not
-underscores** (https://huggingface.co/docs/transformers/main_classes/pipelines):
+A capability is named by its **short id**, and each one takes and returns
+the same parameter names whichever model serves it
+(`capability-interfaces.md`):
 
-| Capability | What it does |
-|---|---|
-| `automatic-speech-recognition` | audio to text |
-| `text-to-speech` | text to audio |
-| `translation` | text to text, another language |
-| `text-to-image` | prompt to image |
-| `text-generation` | language model |
+| Capability | What it does | A step passes |
+|---|---|---|
+| `stt` | audio to text | `file`, `language` |
+| `tts` | text to audio | `text`, `voice` |
+| `translate` | text to text, another language | `text`, `source_lang`, `target_lang` |
+| `image` | prompt to image | `prompt`, `width`, `height` |
+| `llm` | language model | `prompt`, `max_tokens` |
+| `music` | prompt to music | `prompt`, `duration` |
+| `voice-clone` | speak text in a reference voice | `text`, `reference_audio` |
+| `audio-sep` | split vocals from the rest | `file` |
 
-New task, not listed above? Check HuggingFace's task list first and use
-its exact name. Only invent one when HuggingFace has no equivalent — seen
-so far: `audio-source-separation`, `object-detection`,
-`image-segmentation`, `image-to-image`, `summarization`,
-`depth-estimation`.
+**Check the catalogue before building — don't assume what's available:**
+
+```bash
+curl http://localhost:47990/catalogue
+```
+
+Every package, installed or not, with the capabilities it declares. Your
+capability's already there? Reference it by that exact name — done, no
+new package needed. **Not there?** The application can't make it real by
+itself — you need a `.hutashm` model pipeline providing it first (see
+`pipeline-format.md`), or the capability step will never resolve. A new
+capability gets a short lowercase id, and its inputs and outputs are added
+to `capability-interfaces.md` in the same change.
 
 **The engine accepts any string — no hardcoded list, no validation against
-HuggingFace or `index.json`.** A capability is real the moment any
-installed package's manifest declares it (verified directly against the
-Go source: pure string equality, nothing else). The vocabulary holds
-together only because everyone adding a model agrees to use it — enforced
-in PR review, not by the engine.
+`index.json`.** A capability is real the moment any installed package's
+manifest declares it (verified directly against the Go source: pure string
+equality, nothing else). The vocabulary holds together because the names
+are fixed in one list, enforced in PR review, not by the engine.
 
 ---
 

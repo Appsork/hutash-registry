@@ -611,29 +611,45 @@ Calls a model through the engine's transparent inference proxy:
 |---|---|---|
 | `capability` | **yes** | e.g. `stt`, `translate`, `tts`, `llm`. |
 | `model` | no | Usually `${settings.<x>_model}` — see "Model resolution" below. Left unresolved, the step calls `_only_installed_model()`: the first model the engine reports installed for this capability, in catalogue order. Zero installed is a hard failure naming the capability. |
-| `input` | no | Resolved value sent as the request body. |
-| `params` | no | Resolved dict, sent as sibling form fields (file input) or merged into the JSON body (non-file input). |
+| `params` | **yes** | Every parameter, BY NAME, using the names in `capability-interfaces.md` (`file`, `text`, `language`, `source_lang`, `target_lang`, `voice`, `prompt`, ...). A value that is a file — a step's `{"path": ...}` output or raw bytes — is sent as that file. |
+
+A capability step has no `input:` key. A step that carries one is refused, because a bare value has no name for the model to receive it under (see "Contract validation" below).
 
 **The endpoint is never the capability name** — it's read from the
 resolved model's own `GET /packages/{model}/manifest` →
 `capabilities.<name>.endpoint` (cached per engine+model), falling back
 to the capability name only when that manifest can't be read.
 
-**Wire shape**, from the model's own declared inputs: a file-shaped
-`input` (`{"path": ...}` or raw bytes) is sent multipart, keyed `"file"`;
-anything else is sent as JSON `{<key>: input, **params}`, where `<key>`
-is resolved from the model's manifest (its sole required non-file input
-when there's exactly one; `"input"` otherwise). A binary response (e.g.
-TTS audio) is written to `work_dir` and returned as a file-shaped
+**Wire shape** (`hutash_workflow/wire.py`) — ONE format, the one Studio
+sends: a single JSON body `{"fields": {...}}`. Each value rides under the
+name the model's manifest declares; a file is base64-encoded under its
+input's name; every control the step does not set takes its manifest
+`default`; and an audio input that declares `target_sample_rate` and
+`target_channels` is decoded to PCM first. A model that works in Studio
+therefore works in a workflow. A binary response (e.g. TTS audio) is
+written to `work_dir` and returned as a file-shaped
 `{path, format, content_type, size_bytes}` — never raw bytes — so it
 flows into a following `ffmpeg` step unchanged.
 
-**Response unwrapping** picks ONE field from the model's full JSON
-response, richest first: `segments` (has timing) → `text` → `transcript`
-(whisper-tiny's own field name) → `translated_text` → `response` (a
-plain LLM reply) → the whole dict if none match.
+**Contract validation** (`hutash_workflow/contracts.py`) — checked when an
+app STARTS (every workflow in its folder) and again on each run, against
+the model the settings resolve to. A capability step is refused when it:
 
-**`capability: translate` with segment-shaped input** (a
+1. carries a bare `input:` instead of `params:`;
+2. names a parameter the capability does not declare under `inputs:` or
+   `controls:` (the error lists what is available); or
+3. leaves out an input the capability declares `required: true`.
+
+A model whose manifest cannot be read has nothing to check rules 2 and 3
+against, so they are skipped for that step; rule 1 never needs the
+manifest. An app that fails the check at start does not start.
+
+**Response unwrapping** picks ONE field from the model's full JSON
+response, richest first: `segments` (has timing) → `text` → the whole dict
+if neither is present. `text` is the output of every `stt`, `translate`
+and `llm` model (`capability-interfaces.md`).
+
+**`capability: translate` with segment-shaped `text`** (a
 `{start,end,text}` dict list, or a formatted SRT/VTT string from an
 upstream `transcribe` sub-workflow) takes a SEPARATE path: contextual
 sliding-window translation, one call per segment with up to 2 neighbors
@@ -743,7 +759,7 @@ Context available to every step, built up as the run progresses:
   step.
 - A string that is EXACTLY one `${...}` reference resolves to the
   referenced value's real type (a list, dict, bytes) — this is what lets
-  a step's `input:` carry a segment list through unchanged, not a
+  a step's `params:` value (or a formatter's `input:`) carry a segment list through unchanged, not a
   stringified version of it. A `${...}` embedded alongside other text is
   stringified and substituted in place.
 
@@ -912,10 +928,10 @@ steps:
     type: capability
     capability: translate
     model: ${settings.translate_model}
-    input: ${transcribe.outputs.subtitles}
-    params:
-      source_language: ${inputs.source_language}
-      target_language: ${inputs.target_language}
+    params:                               # everything by name — see capability-interfaces.md
+      text: ${transcribe.outputs.subtitles}
+      source_lang: ${inputs.source_language}
+      target_lang: ${inputs.target_language}
 
   - id: format_translated
     name: Format Translated Subtitles
