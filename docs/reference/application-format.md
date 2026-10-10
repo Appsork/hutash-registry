@@ -1097,7 +1097,7 @@ ui:
 
 ```yaml
 # application/config.yaml
-port: 0                    # 0 = engine assigns from pool (49200-65535)
+port: 0                    # 0 = engine assigns a port (dynamically assigned by the OS)
 health: /health
 managed: true
 entrypoint: api/main.py
