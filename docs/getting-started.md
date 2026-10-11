@@ -88,16 +88,16 @@ pages:
     layout: single
     widgets:
       - type: file_upload
-        bind: audio_file
+        bind: file
         props: {label: Drop an audio file here, accept: [audio/*]}
       - type: dropdown
-        bind: source_language
-        props: {label: Spoken language, options_from: "workflow:transcribe.inputs.source_language"}
+        bind: source_lang
+        props: {label: Spoken language, options_from: "workflow:transcribe.inputs.source_lang"}
       - type: action_button
         props:
           label: Transcribe
           action: run_workflow
-          requires: [audio_file]
+          requires: [file]
           workflow: transcribe
       - type: progress_steps
         props: {visible_during: workflow_run}
@@ -147,12 +147,12 @@ name: Transcribe
 version: 1.0
 
 inputs:
-  audio_file:
+  file:
     type: file
     accept: [audio/*]
     label: Audio file
     required: true
-  source_language:
+  source_lang:
     type: dropdown
     options:
       - {value: auto, label: Auto Detect}
@@ -167,10 +167,10 @@ steps:
     type: capability
     capability: stt
     model: ${settings.stt_model}
-    params: {file: "${inputs.audio_file}", word_timestamps: true, language: "${inputs.source_language}"}
+    params: {file: "${inputs.file}", word_timestamps: true, language: "${inputs.source_lang}"}
 
 outputs:
-  transcript:
+  text:
     type: subtitle_editor
     source: ${transcribe.output}
     label: Transcript
@@ -274,12 +274,12 @@ language, get translated text back. Same shape, different capability.
    `description`; `capabilities_needed: [translate]`.
 2. **`application/vertical.yaml`**: swap the `file_upload` widget for a
    `text_input` (`bind: source_text`), add a `dropdown` for the target
-   language (`bind: target_language`); change `settings:` from
+   language (`bind: target_lang`); change `settings:` from
    `stt_model` to `translate_model` (`capability: translate`); change
    `setup.required_capabilities` to match.
 3. **`application/workflows/transcribe.yaml`** → rename to
    `translate.yaml`, update the `id`/`name`, change `inputs:` to
-   `source_text`/`target_language`, change the step's `capability: stt`
+   `source_text`/`target_lang`, change the step's `capability: stt`
    to `capability: translate`, `model: ${settings.translate_model}`, and
    its `params:` to the names `translate` takes — they are the same for
    every translation model (`reference/capability-interfaces.md`):
@@ -287,7 +287,7 @@ language, get translated text back. Same shape, different capability.
    ```yaml
    params:
      text: ${inputs.source_text}
-     target_lang: ${inputs.target_language}
+     target_lang: ${inputs.target_lang}
    ```
 
    Change `outputs:` from a `subtitle_editor` to a plain `type: file`/text

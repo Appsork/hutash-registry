@@ -182,6 +182,11 @@ relative to what a client would actually download.
 
 ## 4. Capability declaration — how a pipeline says "I provide X"
 
+**The route is the id.** The framework serves a capability at `POST /{capability-id}` and a
+manifest declares no `endpoint:`: the Python method behind it can be called `separate`,
+`generate` or `transcribe`, and the URL is still `/audio-sep`, `/llm`, `/stt`. (An older
+manifest that declares one is served at both, as a deprecated alias with a warning.)
+
 **Which names a capability uses is fixed, not chosen.** Every model that
 declares `stt`, `tts`, `translate`, `image`, `video`, `upscale`, `llm`,
 `audio-sep`, `music` or `voice-clone` takes and returns the parameter names listed in
@@ -196,18 +201,17 @@ the engine, interpreted by Studio/verticals/CLI/MCP) is a **map keyed
 by capability id** — `capabilities: {translate: {...}}`, not a list —
 per `create-model-pipeline.md`'s own correct note and confirmed against
 `opus-mt-en-hi`'s real manifest below (`ui.capabilities.translate`).
-Each entry's `endpoint:` is the real HTTP path a caller must use — it
-is never assumed to equal the capability id (`opus-mt-en-hi` itself
-declares `endpoint: /translate`, which happens to match its id, but
-`qwen3-1.7b`'s `llm` capability is served at `/generate`, and
-callers always resolve the endpoint from the manifest rather than
-guessing).
+Each entry is served at `POST /{capability-id}` - there is no `endpoint:` to write, and
+the Python method behind it can be named anything. (Older packages declared one, and
+`qwen3-1.7b`'s `llm` was served at `/generate`; a package that still declares an
+`endpoint:` different from its id is served at both, with a deprecated-alias warning in
+its log, and the engine forwards a request for the id to the declared path.)
 
 This is the OTHER end of the resolution trace documented in full in
 `hutash-os`'s `docs/reference/application-format.md` §2 —
 a vertical's `capabilities_needed` + `${settings.X_model}` resolves TO
 a package id, and that package's own `manifest.yaml.ui.capabilities`
-entry is what supplies the actual endpoint the resolved call hits.
+entry names the capability the resolved call reaches, at `/{capability-id}`.
 
 Top-level `capabilities: [{id, modality}]` (§1's table — a short list,
 not the full `ui.capabilities` map) is what the catalogue's
@@ -350,7 +354,6 @@ ui:
       label: Translate
       description: Translate a .txt or .srt document, or inline text, from English to Hindi
       primary: true
-      endpoint: /translate
       status_message: Translating…
       inputs:
         file:

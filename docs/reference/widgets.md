@@ -191,7 +191,7 @@ two props below are what a page does with them.
 
 ```yaml
 - type: dropdown
-  bind: target_language
+  bind: target_lang
   props:
     label: Subtitle language
     options_from: api:/available-languages
@@ -222,7 +222,7 @@ audio.
     options_from: api:/available-voices
     filter_by:
       field: language      # the field on each option
-      from: target_language # the input holding the value to match
+      from: target_lang # the input holding the value to match
     describe_by: [accent, gender]
 ```
 
@@ -1379,7 +1379,7 @@ button stays disabled until the open project HAS stored media.
     requires: [media_file]
     workflow: transcribe-translate
     routes:
-      - when: { target_language: same }
+      - when: { target_lang: same }
         workflow: transcribe
     create_project: ${inputs.project_name}
     then_navigate_to: editor

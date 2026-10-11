@@ -310,10 +310,10 @@ page.
         bind: project_name
         props: {label: Project name, placeholder: Untitled project, autofill_from: media_file}
       - type: dropdown
-        bind: source_language
-        props: {label: Spoken language, options_from: "workflow:transcribe.inputs.source_language"}
+        bind: source_lang
+        props: {label: Spoken language, options_from: "workflow:transcribe.inputs.source_lang"}
       - type: dropdown
-        bind: target_language
+        bind: target_lang
         props:
           label: Subtitle language
           options_from: "api:/available-languages"
@@ -324,7 +324,7 @@ page.
           action: run_workflow
           requires: [media_file]
           workflow: transcribe-translate
-          routes: [{when: {target_language: same}, workflow: transcribe}]
+          routes: [{when: {target_lang: same}, workflow: transcribe}]
           create_project: "${inputs.project_name}"
           then_navigate_to: editor
           navigate_params: {projectName: "${inputs.project_name}"}
@@ -337,7 +337,7 @@ naming explicitly:
 - **`bind:` is the entire data-binding mechanism.** Every control's
   value lands under that exact key in the workflow's `inputs`; there
   is no separate mapping/adapter layer anywhere.
-- **`target_language`'s `options_from: api:/available-languages`** is
+- **`target_lang`'s `options_from: api:/available-languages`** is
   deliberately narrower than the workflow's own full language list —
   the endpoint filters to languages an actually-installed translation
   model can produce, by reading that model's manifest. The comment in
@@ -345,7 +345,7 @@ naming explicitly:
   workflow's full menu) would let a user pick a language whose model
   isn't installed, and fail on Run instead of failing to appear at all.
 - **`routes:` is conditional workflow dispatch from one form.** The
-  user never picks a workflow by name — picking `target_language: same`
+  user never picks a workflow by name — picking `target_lang: same`
   silently routes the SAME button to `transcribe` instead of
   `transcribe-translate`. `create_project` + `then_navigate_to` fire
   before the workflow even runs, so the created project has somewhere
@@ -798,7 +798,7 @@ Real example — hutash-subs's `resolve_translate_model`
    off is what makes switching the toggle off actually mean "back to
    automatic."
 2. Otherwise, pick whatever installed model supports the run's OWN
-   `target_language` input — the user picked a language, so which model
+   `target_lang` input — the user picked a language, so which model
    serves it is resolved automatically, not left to a fixed setting that
    might not cover it.
 3. Otherwise, left exactly as stored — `capability_step`'s own "no model
@@ -891,7 +891,7 @@ inputs:
     accept: [video/*, audio/*]
     label: Drop your video or audio here
     required: true
-  source_language:
+  source_lang:
     type: dropdown
     options:
       - {value: auto, label: Auto Detect}
@@ -900,7 +900,7 @@ inputs:
       - {value: ta, label: Tamil}
     default: auto
     label: Source Language
-  target_language:
+  target_lang:
     type: dropdown
     options:
       - {value: hi, label: Hindi}
@@ -921,7 +921,7 @@ steps:
     workflow: transcribe
     inputs:
       media_file: ${inputs.media_file}
-      source_language: ${inputs.source_language}
+      source_lang: ${inputs.source_lang}
 
   - id: translate
     name: Translate Segments
@@ -930,8 +930,8 @@ steps:
     model: ${settings.translate_model}
     params:                               # everything by name — see capability-interfaces.md
       text: ${transcribe.outputs.subtitles}
-      source_lang: ${inputs.source_language}
-      target_lang: ${inputs.target_language}
+      source_lang: ${inputs.source_lang}
+      target_lang: ${inputs.target_lang}
 
   - id: format_translated
     name: Format Translated Subtitles
@@ -973,7 +973,7 @@ Annotated:
 - **`translate.model` is `${settings.translate_model}`**, resolved
   through hutash-subs's registered `resolve_translate_model` — which,
   for THIS run, ignores whatever is literally stored in Settings and
-  instead picks a model supporting `target_language`, unless the user
+  instead picks a model supporting `target_lang`, unless the user
   explicitly turned on "Choose Translation Model."
 - **Three outputs, one `primary`.** `translated` is what an editor opens
   and an export defaults to; `original` is kept for reference, never
@@ -1073,7 +1073,7 @@ zipped install) into the flat JSON body `pavaka.ParseInstallRequest`
 
 | Field | Required? | Meaning |
 |---|---|---|
-| `entrypoint` | not enforced by the parser | The command Pavaka launches. Nothing at parse time rejects its absence — an app installs successfully and then fails at first launch with no command to run, rather than failing the install. |
+| `entrypoint` | not enforced by the parser | The FULL command Pavaka execs — never a bare script path. `hutashd` passes this string straight to `fork/exec` (`ext/appmanager.parseEntrypoint`) with no interpreter of its own, so `entrypoint: api/main.py` fails at first launch, not at install (`%1 is not a valid Win32 application` on Windows — confirmed live, hutash-karaoke's first Developer Mode install). See the caveat right after the shipped example below for why hutash-subs's own repo file looks like it gets away with the bare form. |
 | `workdir` | no | Working directory for the launched process. |
 | `health` | no | A bare string (`/health`) OR `{endpoint: "/health"}` — both forms are tolerated and normalized to the plain string internally. |
 | `port` | no | `0` means "engine assigns from its pool" (the real hutash-subs value) — int, string, or a list of ints all parse; a `.hutash` catalogue package may also use `{internal: N}` (confirmed against `hutash-studio.hutash`), normalized the same way. |
@@ -1130,6 +1130,24 @@ fields, and Pavaka's `installRequest` doesn't read it either — present
 in the shipped file, read by nothing this session found. Not harmful,
 just worth knowing before assuming every key in a real file is
 load-bearing.
+
+**This shipped `config.yaml`'s bare `entrypoint: api/main.py` never actually
+reaches Pavaka in that form.** hutash-subs is a first-party vertical:
+`hutash-os/scripts/stage-verticals.ps1` builds its real catalogue package
+from scratch and writes its OWN `application/config/app.yaml` (higher
+precedence — see the section heading above), synthesizing
+`entrypoint: python -m uvicorn api.main:app --host 127.0.0.1 --port
+$($v.DevPort)` plus a matching `ports: [{internal: $($v.DevPort)}]`,
+regardless of what this repo file says. A real install of hutash-subs never
+reads this file's `entrypoint` at all.
+
+Developer Mode (`dev_packages.parse_local_application`) has no equivalent
+staging step — it reads exactly this file and installs it verbatim. An app
+loaded through Developer Mode that copies this shipped example literally
+will install successfully and then fail at first launch with the
+Win32-application error above. Write the full command directly instead —
+see `getting-started.md` Step 3 for the corrected, Developer-Mode-safe
+shape.
 
 ---
 
@@ -1254,3 +1272,40 @@ load-bearing.
     An application missing it installs successfully and only fails when
     the engine actually tries to launch it, which is a much later and
     less legible failure than a rejected install would be.
+
+
+
+## Capability ids and their parameters
+
+A `type: capability` step names a capability by its short id and passes its
+parameters by the standard names under `params:`. The full definition, with
+types, is `reference/capability-interfaces.md`; this is the same list at a glance
+so a workflow author does not have to leave this page.
+
+| `capability:` | required `params:` | returns |
+|---|---|---|
+| `stt` | `file` (optional: `language`) | `text`, `segments` |
+| `tts` | `text` (optional: `voice`) | `audio` |
+| `translate` | `text` (optional: `source_lang`, `target_lang`) | `text` |
+| `image` | `prompt` (optional: `negative_prompt`, `width`, `height`) | `image` |
+| `llm` | `prompt` (optional: `max_tokens`) | `text` |
+| `audio-sep` | `file` | `vocals`, `instrumental` |
+| `music` | `prompt` (optional: `duration`) | `audio` |
+| `voice-clone` | `text` (optional: `reference_audio`) | `audio` |
+| `video` | `prompt` (optional: `width`, `height`, `num_frames`, `num_steps`) | `video` |
+| `upscale` | `image` (optional: `scale`) | `image` |
+
+A step that uses another spelling, a bare `input:`, or leaves out a required
+parameter is refused when the app starts and again on every run.
+
+## Naming of workflow inputs
+
+The examples above spell a workflow's own input ids the way the capability
+standard spells its parameters (`file`, `source_lang`, `target_lang`), so an
+input and the `params:` entry it feeds read the same. An input id is the app's
+own name, not part of the capability contract: the contract is the `params:`
+keys of a `type: capability` step, which the workflow runner checks against the
+model's manifest on every run (`reference/capability-interfaces.md`). The
+shipped verticals that predate the standard keep their own, older spellings
+of the source-language and target-language input ids; that is harmless and is
+not a template to copy.

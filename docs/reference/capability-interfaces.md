@@ -22,6 +22,19 @@ bare `input:` — and the workflow runner refuses, when an app starts and
 again on each run, a step that names a parameter its model does not declare
 or leaves out a required one.
 
+## Where a capability is served
+
+A capability is served at `POST /{capability-id}`: `/stt`, `/tts`, `/translate`, `/image`,
+`/llm`, `/audio-sep`, `/music`, `/voice-clone`, `/video`, `/upscale`. The id is the key
+under `capabilities` in the manifest, which `@capability("<id>")` binds to a Python
+method; the method may be called anything (`separate`, `generate`, `transcribe`) and its
+name is never a route. A manifest does not declare an `endpoint`: there is one URL per
+capability, so a caller that knows the id knows the path. A manifest written before this
+rule that still declares a different `endpoint` is served at both, the extra route as a
+deprecated alias with a warning in the model's log, and the engine forwards a request for
+the capability id to that declared endpoint - a safety net that has nothing to do once the
+field is gone.
+
 ## stt
 
 ```yaml
@@ -120,8 +133,10 @@ outputs:
 ```
 
 Text to video. `num_frames` is a count of frames, not seconds; how many a
-second of playback takes is the model's own frame rate (Wan 2.1 writes 15 a
-second). A model may round `width`, `height` and `num_frames` to the nearest
+second of playback takes is the model's own frame rate (Wan 2.1 writes 16 a
+second). A model states that rate as `output_fps` on its capability, which is
+how Studio shows "33 frames = ~2.1s at 16 fps" beside a frames slider
+(`unit: frames`); the file must really play at the rate it declares. A model may round `width`, `height` and `num_frames` to the nearest
 values it supports and says so in its own description — Wan 2.1, for example,
 takes sides in multiples of 16 and frame counts of the form 4k + 1. A model may
 declare further controls of its own (a seed, a guidance scale); only the names
