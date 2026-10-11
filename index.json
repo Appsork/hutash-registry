@@ -993,7 +993,7 @@
       "type": "pipeline",
       "category": "video",
       "hutash": "pipelines/wan-2.1-t2v.hutashm",
-      "sha256": "a51447f4ba6c106598b72419d1c5e2c6e1eb7b0c2c3f9b07c400b13ba43fe049",
+      "sha256": "1a64368554c37098e998c6206224d4190ff84ebe54c504849ee4834a1e6f3905",
       "name": "Wan 2.1 Text-to-Video 1.3B",
       "description": "Text-to-video. Describe a scene and get a short MP4 clip. Needs a GPU with about 6 GB of VRAM, 24 GB of RAM, and a 5 GB download.",
       "version": "1.0.2",
