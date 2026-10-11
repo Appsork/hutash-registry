@@ -318,7 +318,7 @@ in a workflow; always reference the capability it provides, and let
 installed) resolve it to a real model at run time.
 
 A capability is named by its **short id**: `stt`, `tts`, `translate`,
-`image`, `llm`, `audio-sep`, `music`, `voice-clone`. Each has
+`image`, `video`, `upscale`, `llm`, `audio-sep`, `music`, `voice-clone`. Each has
 one fixed set of input and output names, the same for every model that
 provides it — `reference/capability-interfaces.md` is the list, and a
 `type: capability` step passes its parameters by those names under

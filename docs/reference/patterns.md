@@ -331,6 +331,8 @@ the same parameter names whichever model serves it
 | `tts` | text to audio | `text`, `voice` |
 | `translate` | text to text, another language | `text`, `source_lang`, `target_lang` |
 | `image` | prompt to image | `prompt`, `width`, `height` |
+| `video` | prompt to a short video clip | `prompt`, `width`, `height`, `num_frames`, `num_steps` |
+| `upscale` | enlarge an image 2x or 4x | `image`, `scale` |
 | `llm` | language model | `prompt`, `max_tokens` |
 | `music` | prompt to music | `prompt`, `duration` |
 | `voice-clone` | speak text in a reference voice | `text`, `reference_audio` |

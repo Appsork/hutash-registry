@@ -183,8 +183,8 @@ relative to what a client would actually download.
 ## 4. Capability declaration — how a pipeline says "I provide X"
 
 **Which names a capability uses is fixed, not chosen.** Every model that
-declares `stt`, `tts`, `translate`, `image`, `llm`, `audio-sep`,
-`music` or `voice-clone` takes and returns the parameter names listed in
+declares `stt`, `tts`, `translate`, `image`, `video`, `upscale`, `llm`,
+`audio-sep`, `music` or `voice-clone` takes and returns the parameter names listed in
 `capability-interfaces.md` (for example `translate` takes `text`,
 `source_lang`, `target_lang` and returns `text`). A pipeline whose manifest
 or `@capability` method uses another name for the same thing is not

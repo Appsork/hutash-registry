@@ -8,7 +8,7 @@ it. Nothing is built or run in this repo.
 | Path | What |
 |---|---|
 | `index.json` | The catalogue the app reads: every package, its modality, its version |
-| `pipelines/*.hutash` | Model packages — one per model (voiceover, transcribe, translate, chat, image, music, voice cloning) |
+| `pipelines/*.hutash` | Model packages — one per model (voiceover, transcribe, translate, chat, image, video, upscale, music, voice cloning) |
 | `apps/*.hutash` | Application packages |
 | `ratings/` | Hutash Score per model, and the [methodology](ratings/METHODOLOGY.md) behind it |
 | `releases/latest.json` | Update manifest the desktop app checks |

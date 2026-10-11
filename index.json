@@ -35,6 +35,11 @@
       "color": "#A5B4FC",
       "label": "Image",
       "subfolder": "images"
+    },
+    "video": {
+      "color": "#F48FB1",
+      "label": "Video",
+      "subfolder": "videos"
     }
   },
   "features": [
@@ -127,6 +132,19 @@
       "layout": "aggregator-3panel",
       "accepts": [],
       "permissions": []
+    },
+    {
+      "id": "video",
+      "name": "Video",
+      "description": "Video models.",
+      "modality": "video",
+      "primary_model_id": "wan-2.1-t2v",
+      "icon": "video",
+      "version": "1.0.0",
+      "layout": "aggregator-3panel",
+      "accepts": [],
+      "permissions": [],
+      "generated": true
     }
   ],
   "packages": [
@@ -906,10 +924,10 @@
       "type": "application",
       "category": "Audio Tools",
       "hutash": "apps/hutash-podcast.hutash",
-      "sha256": "190b0fe016917309fdac11d146aa8ab29b397cccd31d766c118ff326b02deab5",
+      "sha256": "204a4d203e11511b1514ee61dcbdfd43cc816a54449a60222908ea003e8a4f5b",
       "name": "Hutash Podcast (Beta)",
       "description": "Turn podcast episodes into transcripts, show notes, and chapters",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "license": "MIT",
       "min_vram_gb": 0,
       "disk_size_gb": null,
@@ -952,10 +970,10 @@
       "type": "application",
       "category": "Video Tools",
       "hutash": "apps/hutash-subs.hutash",
-      "sha256": "afb369758fd2f5747acf624ab33f12a90355087f0587173ca921e9f5a48bb17a",
+      "sha256": "61a2fee0f3a5df60649c9c1bee75d04f6f0af9eef5e0816878e2b1ae377f8e9f",
       "name": "Hutash Subs (Beta)",
       "description": "Transcribe and translate video subtitles locally using AI models",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "license": "MIT",
       "min_vram_gb": 0,
       "disk_size_gb": null,
@@ -969,6 +987,48 @@
       "hf_revision": null,
       "allow_patterns": null,
       "weights_external": false
+    },
+    {
+      "id": "wan-2.1-t2v",
+      "type": "pipeline",
+      "category": "video",
+      "hutash": "pipelines/wan-2.1-t2v.hutashm",
+      "sha256": "66a644f7c5d9033a15cb6a75e51c5728dbb1e00070471fbb2bf875a8ba3b0446",
+      "name": "Wan 2.1 Text-to-Video 1.3B",
+      "description": "Text-to-video. Describe a scene and get a short MP4 clip. Needs a GPU with 8 GB of VRAM, and a 29 GB download.",
+      "version": "1.0.0",
+      "license": "Apache-2.0",
+      "min_vram_gb": 8.0,
+      "disk_size_gb": 28.9,
+      "quality_score": null,
+      "speed": null,
+      "modality": "video",
+      "capabilities": [
+        {
+          "id": "video",
+          "modality": "video"
+        }
+      ],
+      "hardware_label": "GPU (8GB+)",
+      "internal": false,
+      "hf_repo": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+      "hf_revision": "0fad780a534b6463e45facd96134c9f345acfa5b",
+      "allow_patterns": [
+        "model_index.json",
+        "scheduler/**",
+        "text_encoder/**",
+        "tokenizer/**",
+        "transformer/**",
+        "vae/**"
+      ],
+      "weights_external": true,
+      "language": "en",
+      "languages": [
+        "en",
+        "zh"
+      ],
+      "min_os_version": "1.0.2",
+      "min_ram_gb": 16.0
     }
   ]
 }

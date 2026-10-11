@@ -16,6 +16,8 @@ The engine exposes a local HTTP API on `localhost:47990`. Studio, the OS shell, 
 | GET | /activity | Recent jobs with status and timing |
 | GET | /activity/stream | Server-sent events for live job progress |
 | GET | /hardware | Detected GPU, VRAM, RAM, and compatibility |
+| GET | /apps | Installed apps. Each carries `update_available`; when the registry publishes a newer version, also `update_source: "catalogue"`, `installed_version` and `latest_version` |
+| POST | /apps/:id/stage-update | Fetch the registry's newer package for an installed app, verify its sha256, and stage it; returns `{app_id, version, path}`. 409 when nothing newer is published |
 | GET | /settings | Read engine settings |
 | PATCH | /settings | Update engine settings |
 
