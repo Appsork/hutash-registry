@@ -100,7 +100,7 @@ A **model pipeline** (`.hutashm`) is a headless capability provider. It
 has no UI of its own — it declares one or more `capabilities` (`stt`,
 `translate`, `tts`, …) in its manifest's `ui.capabilities` block
 (`HUTASH_FORMAT.md` §5), the engine installs and runs it, and it is
-reached exclusively through `POST /packages/{id}/infer/{endpoint}`. It
+reached exclusively through `POST /packages/{id}/infer/{capability-id}`. It
 does not know or care who is calling it.
 
 An **application** (`.hutash`) is a UI that *consumes* one or more
@@ -109,7 +109,7 @@ capabilities. A vertical (Hutash Subs, Podcast, Dub) declares
 model — it asks the shared resolution mechanism (see the application
 authoring reference's capability-resolution section) for "whatever
 installed package can do `stt`," and gets back a package id it then
-calls through the same `/infer/{endpoint}` route. Studio, and any other
+calls through the same `/infer/{capability-id}` route. Studio, and any other
 UI-carrying app, is exactly the same shape, just usually consuming many
 capabilities across many pipelines rather than one or two.
 

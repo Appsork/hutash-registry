@@ -405,11 +405,10 @@ The build-test loop:
    `Authorization: Bearer <token>` — read `api_token` from `hutashd.json`,
    never hardcode it in a script) — confirm your package id is listed.
 5. **For a `.hutashm` pipeline:** call its capability directly —
-   `POST http://localhost:47990/packages/{id}/infer/{endpoint}`. The
-   endpoint comes from that model's own manifest
-   (`GET http://localhost:47990/packages/{id}/manifest`) — never assume it
-   matches the capability name (see `reference/application-format.md` §2).
-   Verify the response.
+   `POST http://localhost:47990/packages/{id}/infer/{capability-id}`, with a
+   body of `{"fields": {...}}`. The path is the capability id (`stt`,
+   `image`, `upscale`, ...): a manifest declares no endpoint of its own (see
+   `reference/application-format.md` §2). Verify the response.
 6. **For a `.hutash` application:** find its assigned port first —
    `GET http://localhost:47990/apps` lists every installed app with its
    port — then `POST http://localhost:<app_port>/api/v1/workflows/{workflow_id}/run`

@@ -16,7 +16,7 @@ this document adds:
    checked against the actual parser, not just the common case.
 2. The **full runtime trace** of capability resolution: how
    `${settings.stt_model}` in a workflow step turns into a real
-   `POST /packages/{id}/infer/{endpoint}` call, end to end.
+   `POST /packages/{id}/infer/{capability-id}` call, end to end.
 3. **One real, complete, shipped `vertical.yaml`** (hutash-subs),
    quoted in full and annotated section by section — not the
    `create-vertical.md` guide's intentionally minimal "hello" example.
@@ -205,14 +205,15 @@ without ever naming a specific model, traced end to end:
      tombstone row (this session's own earlier `handleDelete` reading
      confirms this daemon-side; `is_installed()` on the Python side
      reads the flag, never row presence, for exactly this reason).
-   - Once a model id is resolved, the step reads THAT model's own
-     manifest to find the capability's real HTTP endpoint
-     (`manifest.capabilities.<name>.endpoint`) — **the endpoint is
-     never assumed to equal the capability name.** Documented failure
-     this exists to prevent: `qwen3-1.7b` declares capability
-     `improve` served at `/generate`, not `/improve` — assuming they
-     matched 404'd every call (capability_step.py module docstring).
-   - The actual call: `POST /packages/{model}/infer/{endpoint}` — the
+   - Once a model id is resolved, the step calls it at the capability id:
+     **a capability is served at `/{capability-id}`, whatever the model's
+     Python method is called, and a manifest declares no `endpoint`.** The
+     step still reads the model's manifest first, so an older package that
+     declares a different `endpoint` keeps working (it is served at both,
+     the extra route as a deprecated alias); with none declared, the
+     capability id is the path. This is what retired the old special case
+     of `improve` being served at `/generate`.
+   - The actual call: `POST /packages/{model}/infer/{capability-id}` — the
      engine's transparent inference proxy.
 
 5. **The Settings picker's own options** —
@@ -605,7 +606,7 @@ recursively through dicts and lists before the handler runs (see
 #### `type: capability` (`steps/capability_step.py`)
 
 Calls a model through the engine's transparent inference proxy:
-`POST /packages/{model}/infer/{endpoint}`.
+`POST /packages/{model}/infer/{capability-id}`.
 
 | Config key | Required? | Meaning |
 |---|---|---|
@@ -774,7 +775,7 @@ naming exactly which step/output and which reference.
 ### `${settings.X_model}` resolution, and the per-run override seam
 
 The engine-facing half of this — how a resolved model id turns into a
-real `POST .../infer/{endpoint}` call — is documented in full in §2
+real `POST .../infer/{capability-id}` call — is documented in full in §2
 above ("Capability / `model_selector` resolution"). This section covers
 the OTHER half: how `context["settings"]` itself gets built for one run.
 
