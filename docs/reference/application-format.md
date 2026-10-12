@@ -616,10 +616,12 @@ Calls a model through the engine's transparent inference proxy:
 
 A capability step has no `input:` key. A step that carries one is refused, because a bare value has no name for the model to receive it under (see "Contract validation" below).
 
-**The endpoint is never the capability name** — it's read from the
-resolved model's own `GET /packages/{model}/manifest` →
-`capabilities.<name>.endpoint` (cached per engine+model), falling back
-to the capability name only when that manifest can't be read.
+**The route is the capability id.** A manifest declares no `endpoint`, so
+the step posts to `/infer/{capability-id}`. It still honours a legacy
+`capabilities.<name>.endpoint` in the resolved model's own
+`GET /packages/{model}/manifest` (cached per engine+model), for a package
+published before that rule; with none declared, or when the manifest can't
+be read, it uses the capability id.
 
 **Wire shape** (`hutash_workflow/wire.py`) — ONE format, the one Studio
 sends: a single JSON body `{"fields": {...}}`. Each value rides under the
