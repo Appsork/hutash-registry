@@ -222,6 +222,25 @@ contract — the two are parallel, not duplicate: the short list answers
 
 ---
 
+## 4a. Marketplace card fields (added 2026-10-12)
+
+The marketplace card is built from four things a pipeline declares. None stops a package from
+running; each one missing leaves a hole in the card.
+
+| Field | Where it is written | The card without it |
+|---|---|---|
+| `quality_score` (0.0-1.0) | `manifest.yaml` `metadata.quality_score` | Score column shows a dash; the model sorts last by quality |
+| `min_vram_gb` / `min_ram_gb` | `manifest.yaml` top level | Hardware reads "CPU only"; Status is "Compatible" without any check |
+| framework | detected from `application/packages.yaml` (not a manifest key) | classed `custom`: no partial GPU+RAM loading assumed, so Status can read Incompatible on a GPU the model would have run on |
+| `disk_size_gb` | `resources/weights.yaml` `download_size_gb` (> 0) | Size row shows a dash |
+
+Three places check them, at three moments. MCP `create_pipeline` WARNS (the files are still written).
+`scripts/build_index.py` FAILS the build for a pipeline with no `quality_score`, so it never reaches an
+index. The `hutash-os` architecture test `tests/architecture/test_marketplace_fields.py` fails CI for
+a `models/` source or a published package missing any of them. The 0-10 Score in `ratings/ratings.json`
+is separate: `quality_score` is the author's 0-1 declaration, the rating is computed (or, with no
+benchmark, an editorial placement labelled as such) per `ratings/METHODOLOGY.md`.
+
 ## 5. Two verified discrepancies between the documented examples and reality
 
 **1. `packages.yaml`'s documented example shape does not match the
