@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-14",
+  "updated_at": "2026-10-12",
   "version": "1.0",
   "formula_version": "1.0",
   "_formula": {
@@ -333,6 +333,14 @@
     "flux1-schnell-q4": {
       "hutash_score": 8.5,
       "note": "EDITORIAL, not computed. No comparable image-quality benchmark was run for it, so this is a placement of the same kind as stable-diffusion-1.5's 7.5, not a measurement: FLUX.1 Schnell is a newer and stronger image model than Stable Diffusion 1.5 (its manifest's quality_score is 0.9 against SD 1.5's 0.75), so it sits above it. It should be replaced by a measured score rather than kept. Recorded as editorial so it is not mistaken for one."
+    },
+    "wan-2.1-t2v": {
+      "hutash_score": 6.5,
+      "note": "EDITORIAL, not computed. No comparable video-quality benchmark was run for it, so this is a placement of the same kind as stable-diffusion-1.5's 7.5, not a measurement: a 1.3B text-to-video model at 480p, Q4 GGUF, sits below the image models in output quality."
+    },
+    "upscale": {
+      "hutash_score": 7.0,
+      "note": "EDITORIAL, not computed. No comparable upscaling benchmark was run for it, so this is a placement of the same kind as stable-diffusion-1.5's 7.5, not a measurement: Swin2SR classical x2/x4 is a small, fast, faithful upscaler without generative detail."
     }
   }
 }
