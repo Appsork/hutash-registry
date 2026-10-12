@@ -40,6 +40,11 @@
       "color": "#F48FB1",
       "label": "Video",
       "subfolder": "videos"
+    },
+    "upscale": {
+      "color": "#FFAB91",
+      "label": "Upscale",
+      "subfolder": "upscaled"
     }
   },
   "features": [
@@ -145,6 +150,18 @@
       "accepts": [],
       "permissions": [],
       "generated": true
+    },
+    {
+      "id": "upscale",
+      "name": "Upscale",
+      "description": "Enlarge an image 2x or 4x.",
+      "modality": "upscale",
+      "primary_model_id": "upscale",
+      "icon": "upscale",
+      "version": "1.0.0",
+      "layout": "aggregator-3panel",
+      "accepts": [],
+      "permissions": []
     }
   ],
   "packages": [
@@ -1029,6 +1046,41 @@
       ],
       "min_os_version": "1.0.2",
       "min_ram_gb": 24.0
+    },
+    {
+      "id": "upscale",
+      "type": "pipeline",
+      "category": "image",
+      "hutash": "pipelines/upscale.hutashm",
+      "sha256": "d8f2969815efc4a2ff2e66025a445eb5490acf6d0c18acf59d25f2ee0c60cd1a",
+      "name": "Image Upscaler",
+      "description": "Enlarge an image 2x or 4x while keeping it sharp. Small, and runs on a CPU.",
+      "version": "1.0.1",
+      "license": "Apache-2.0",
+      "min_vram_gb": 1.0,
+      "disk_size_gb": 0.1,
+      "quality_score": null,
+      "speed": null,
+      "modality": "upscale",
+      "capabilities": [
+        {
+          "id": "upscale",
+          "modality": "upscale"
+        }
+      ],
+      "hardware_label": "CPU",
+      "internal": false,
+      "hf_repo": "caidas/swin2SR-classical-sr-x2-64",
+      "hf_revision": "cee1c923c6a37361c6e5650b65dcf4be821e5d52",
+      "allow_patterns": [
+        "config.json",
+        "preprocessor_config.json",
+        "model.safetensors"
+      ],
+      "weights_external": true,
+      "language": "en",
+      "min_os_version": "1.0.2",
+      "min_ram_gb": 4.0
     }
   ]
 }
