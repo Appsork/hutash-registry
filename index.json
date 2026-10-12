@@ -156,7 +156,7 @@
       "name": "Upscale",
       "description": "Enlarge an image 2x or 4x.",
       "modality": "upscale",
-      "primary_model_id": "upscale",
+      "primary_model_id": "real-esrgan-x4",
       "icon": "upscale",
       "version": "1.0.0",
       "layout": "aggregator-3panel",
@@ -744,6 +744,39 @@
       }
     },
     {
+      "id": "real-esrgan-x4",
+      "type": "pipeline",
+      "category": "image",
+      "hutash": "pipelines/real-esrgan-x4.hutashm",
+      "sha256": "d92acd8677db9e2b40f30fde8616a581e453ba636f5ea80a0930a1df5e46e23f",
+      "name": "Real-ESRGAN x4plus",
+      "description": "Enlarge an image 2x or 4x with Real-ESRGAN x4plus, which rebuilds fine detail and texture instead of only smoothing. Runs on a GPU or a CPU.",
+      "version": "1.0.0",
+      "license": "BSD-3-Clause",
+      "min_vram_gb": 2.0,
+      "disk_size_gb": 0.07,
+      "quality_score": 0.85,
+      "speed": null,
+      "modality": "upscale",
+      "capabilities": [
+        {
+          "id": "upscale",
+          "modality": "upscale"
+        }
+      ],
+      "hardware_label": "CPU",
+      "internal": false,
+      "hf_repo": "leonelhs/realesrgan",
+      "hf_revision": "6907f85a9095e201ec4b3c7e91bbb66cdec0f04d",
+      "allow_patterns": [
+        "RealESRGAN_x4plus.pth"
+      ],
+      "weights_external": true,
+      "language": "en",
+      "min_os_version": "1.0.2",
+      "min_ram_gb": 4.0
+    },
+    {
       "id": "stable-diffusion-1.5",
       "type": "pipeline",
       "category": "image",
@@ -845,6 +878,48 @@
         "sa",
         "en"
       ]
+    },
+    {
+      "id": "wan-2.1-t2v",
+      "type": "pipeline",
+      "category": "video",
+      "hutash": "pipelines/wan-2.1-t2v.hutashm",
+      "sha256": "cfd780e194ea0be8b3bc7bf199f0a1638e6120131594a99cf867a0aaa1e4eb03",
+      "name": "Wan 2.1 Text-to-Video 1.3B",
+      "description": "Text-to-video. Describe a scene and get a short MP4 clip. Needs a GPU with about 6 GB of VRAM, 24 GB of RAM, and a 5 GB download.",
+      "version": "1.0.5",
+      "license": "Apache-2.0",
+      "min_vram_gb": 6.0,
+      "disk_size_gb": 5.2,
+      "quality_score": 0.65,
+      "speed": null,
+      "modality": "video",
+      "capabilities": [
+        {
+          "id": "video",
+          "modality": "video"
+        }
+      ],
+      "hardware_label": "GPU (6GB+)",
+      "internal": false,
+      "hf_repo": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
+      "hf_revision": "0fad780a534b6463e45facd96134c9f345acfa5b",
+      "allow_patterns": [
+        "model_index.json",
+        "scheduler/**",
+        "tokenizer/**",
+        "vae/**",
+        "transformer/config.json",
+        "text_encoder/config.json"
+      ],
+      "weights_external": true,
+      "language": "en",
+      "languages": [
+        "en",
+        "zh"
+      ],
+      "min_os_version": "1.0.2",
+      "min_ram_gb": 24.0
     },
     {
       "id": "whisper-large-v3",
@@ -1004,83 +1079,6 @@
       "hf_revision": null,
       "allow_patterns": null,
       "weights_external": false
-    },
-    {
-      "id": "wan-2.1-t2v",
-      "type": "pipeline",
-      "category": "video",
-      "hutash": "pipelines/wan-2.1-t2v.hutashm",
-      "sha256": "cfd780e194ea0be8b3bc7bf199f0a1638e6120131594a99cf867a0aaa1e4eb03",
-      "name": "Wan 2.1 Text-to-Video 1.3B",
-      "description": "Text-to-video. Describe a scene and get a short MP4 clip. Needs a GPU with about 6 GB of VRAM, 24 GB of RAM, and a 5 GB download.",
-      "version": "1.0.5",
-      "license": "Apache-2.0",
-      "min_vram_gb": 6.0,
-      "disk_size_gb": 5.2,
-      "quality_score": 0.65,
-      "speed": null,
-      "modality": "video",
-      "capabilities": [
-        {
-          "id": "video",
-          "modality": "video"
-        }
-      ],
-      "hardware_label": "GPU (6GB+)",
-      "internal": false,
-      "hf_repo": "Wan-AI/Wan2.1-T2V-1.3B-Diffusers",
-      "hf_revision": "0fad780a534b6463e45facd96134c9f345acfa5b",
-      "allow_patterns": [
-        "model_index.json",
-        "scheduler/**",
-        "tokenizer/**",
-        "vae/**",
-        "transformer/config.json",
-        "text_encoder/config.json"
-      ],
-      "weights_external": true,
-      "language": "en",
-      "languages": [
-        "en",
-        "zh"
-      ],
-      "min_os_version": "1.0.2",
-      "min_ram_gb": 24.0
-    },
-    {
-      "id": "upscale",
-      "type": "pipeline",
-      "category": "image",
-      "hutash": "pipelines/upscale.hutashm",
-      "sha256": "3e6f64d064393581d8135c0ac1a6ca98f628de44e2a101a4499ba09150aa8ff9",
-      "name": "Image Upscaler",
-      "description": "Enlarge an image 2x or 4x while keeping it sharp. Small, and runs on a CPU.",
-      "version": "1.0.2",
-      "license": "Apache-2.0",
-      "min_vram_gb": 1.0,
-      "disk_size_gb": 0.1,
-      "quality_score": 0.7,
-      "speed": null,
-      "modality": "upscale",
-      "capabilities": [
-        {
-          "id": "upscale",
-          "modality": "upscale"
-        }
-      ],
-      "hardware_label": "CPU",
-      "internal": false,
-      "hf_repo": "caidas/swin2SR-classical-sr-x2-64",
-      "hf_revision": "cee1c923c6a37361c6e5650b65dcf4be821e5d52",
-      "allow_patterns": [
-        "config.json",
-        "preprocessor_config.json",
-        "model.safetensors"
-      ],
-      "weights_external": true,
-      "language": "en",
-      "min_os_version": "1.0.2",
-      "min_ram_gb": 4.0
     }
   ]
 }

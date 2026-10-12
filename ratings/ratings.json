@@ -338,9 +338,9 @@
       "hutash_score": 6.5,
       "note": "EDITORIAL, not computed. No comparable video-quality benchmark was run for it, so this is a placement of the same kind as stable-diffusion-1.5's 7.5, not a measurement: a 1.3B text-to-video model at 480p, Q4 GGUF, sits below the image models in output quality."
     },
-    "upscale": {
-      "hutash_score": 7.0,
-      "note": "EDITORIAL, not computed. No comparable upscaling benchmark was run for it, so this is a placement of the same kind as stable-diffusion-1.5's 7.5, not a measurement: Swin2SR classical x2/x4 is a small, fast, faithful upscaler without generative detail."
+    "real-esrgan-x4": {
+      "hutash_score": 8.5,
+      "note": "EDITORIAL, not computed. No comparable upscaling benchmark was run for it, so this is a placement of the same kind as stable-diffusion-1.5's 7.5, not a measurement: Real-ESRGAN x4plus rebuilds texture and fine detail, which places it above a faithful but flatter upscaler. Its manifest quality_score is the same placement on the 0-1 scale."
     }
   }
 }
