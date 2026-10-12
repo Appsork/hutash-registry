@@ -19,7 +19,7 @@ not that document itself.
 
 **Relationship to existing docs:** `hutash-os`'s
 `docs/reference/HUTASH_FORMAT.md` (v1.4.1) is the actively-maintained
-format spec and `docs/reference/create-model-pipeline.md` is its
+format spec and the developer guide (`developer-guide.md`) is its
 tutorial companion — both are good and this document does not replace
 either. What this document adds, verified fresh against the parser
 rather than assumed from those docs:
@@ -199,7 +199,7 @@ it meets it.
 `manifest.yaml`'s `ui.capabilities` block (§1's `ui` field, opaque to
 the engine, interpreted by Studio/verticals/CLI/MCP) is a **map keyed
 by capability id** — `capabilities: {translate: {...}}`, not a list —
-per `create-model-pipeline.md`'s own correct note and confirmed against
+as the developer guide also says, and confirmed against
 `opus-mt-en-hi`'s real manifest below (`ui.capabilities.translate`).
 Each entry is served at `POST /{capability-id}` - there is no `endpoint:` to write, and
 the Python method behind it can be named anything. (Older packages declared one, and
@@ -289,7 +289,7 @@ level too deep, `variants` absent, `system_packages` absent).
 
 **2. `launch.yaml`'s documented example shape does not match the
 parser or any real shipped file either.** Both `HUTASH_FORMAT.md` §4
-and `create-model-pipeline.md` §3 show:
+and the since-removed `create-model-pipeline.md` §3 showed:
 
 ```yaml
 entrypoint: inference.py
@@ -541,4 +541,4 @@ file) and no `inference.py` shown here only because this package uses
 the shared `hutash-inference` PyPI package (via `launch.yaml`'s
 `command`/`args`) rather than shipping its own — a pipeline that does
 ship custom inference code puts it at `application/inference.py`
-instead, per `create-model-pipeline.md` §4.
+instead, as the developer guide describes.

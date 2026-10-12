@@ -100,7 +100,7 @@ A **model pipeline** (`.hutashm`) is a headless capability provider. It
 has no UI of its own — it declares one or more `capabilities` (`stt`,
 `translate`, `tts`, …) in its manifest's `ui.capabilities` block
 (`HUTASH_FORMAT.md` §5), the engine installs and runs it, and it is
-reached exclusively through `POST /packages/{id}/infer/{endpoint}`. It
+reached exclusively through `POST /packages/{id}/infer/{capability-id}`. It
 does not know or care who is calling it.
 
 An **application** (`.hutash`) is a UI that *consumes* one or more
@@ -109,7 +109,7 @@ capabilities. A vertical (Hutash Subs, Podcast, Dub) declares
 model — it asks the shared resolution mechanism (see the application
 authoring reference's capability-resolution section) for "whatever
 installed package can do `stt`," and gets back a package id it then
-calls through the same `/infer/{endpoint}` route. Studio, and any other
+calls through the same `/infer/{capability-id}` route. Studio, and any other
 UI-carrying app, is exactly the same shape, just usually consuming many
 capabilities across many pipelines rather than one or two.
 
@@ -138,9 +138,8 @@ made inside the manifest.
 - The full `vertical.yaml` schema and widget catalogue — see the
   application authoring reference (this repo) and `REGISTRY.md` /
   `VERTICAL-UI-DESIGN-SPEC.md` (hutash-subs).
-- Whether `HUTASH_FORMAT.md`, `REGISTRY.md`, `create-vertical.md`, and
-  `create-model-pipeline.md` themselves get updated to mention
-  `.hutashm` — they should, but that edit wasn't part of this audit
-  phase (which was scoped to producing new reference material, not
-  revising the existing four documents) and is flagged here as
-  follow-up work rather than done silently.
+- Whether `HUTASH_FORMAT.md`, `REGISTRY.md` and `create-vertical.md`
+  themselves get updated to mention `.hutashm` — they should, but that
+  edit wasn't part of this audit phase (which was scoped to producing new
+  reference material, not revising the existing documents) and is flagged
+  here as follow-up work rather than done silently.

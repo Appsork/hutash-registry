@@ -42,4 +42,4 @@ Grouped by what they do. The [models page](../../models.html) lists sizes, hardw
 
 ## Building your own
 
-Packaging a model or an app of your own? [Developer Mode](../developer-mode/index.html) lets you load a local package and test it before you publish anything.
+Packaging a model or an app of your own? [Developer Mode](../developer-guide/index.html) lets you load a local package and test it before you publish anything.
