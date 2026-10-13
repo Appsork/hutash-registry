@@ -759,7 +759,13 @@ Context available to every step, built up as the run progresses:
   caught at RUN time, as `VariableResolutionError`.
 - `${<step_id>.output}` — that step's raw result.
 - `${<step_id>.outputs.<name>}` — only resolvable for a `type: workflow`
-  step.
+  step, and `<name>` must be an output that step's sub-workflow declares.
+- **These four are the only shapes.** Anything else — `${separate.vocals}`,
+  `${step.output.text}`, `${inputs.file.name}`, `${step.outputs.x}` on a
+  capability step — cannot resolve, and the loader refuses it at load with
+  a message naming the reference and the allowed forms, so an app fails to
+  start instead of failing on its first run. A capability step has ONE
+  result, `${step.output}`; there is no way to pick a field out of it.
 - A string that is EXACTLY one `${...}` reference resolves to the
   referenced value's real type (a list, dict, bytes) — this is what lets
   a step's `params:` value (or a formatter's `input:`) carry a segment list through unchanged, not a
