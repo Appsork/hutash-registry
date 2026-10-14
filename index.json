@@ -757,10 +757,10 @@
       "type": "pipeline",
       "category": "image",
       "hutash": "pipelines/real-esrgan-x4.hutashm",
-      "sha256": "d92acd8677db9e2b40f30fde8616a581e453ba636f5ea80a0930a1df5e46e23f",
+      "sha256": "a8379d01325be84c29b8550da3a947266d54a536b33ce7740a5a98c2fb42f8d6",
       "name": "Real-ESRGAN x4plus",
       "description": "Enlarge an image 2x or 4x with Real-ESRGAN x4plus, which rebuilds fine detail and texture instead of only smoothing. Runs on a GPU or a CPU.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "license": "BSD-3-Clause",
       "min_vram_gb": 2.0,
       "disk_size_gb": 0.07,
@@ -775,10 +775,10 @@
       ],
       "hardware_label": "CPU",
       "internal": false,
-      "hf_repo": "leonelhs/realesrgan",
-      "hf_revision": "6907f85a9095e201ec4b3c7e91bbb66cdec0f04d",
+      "hf_repo": "Comfy-Org/Real-ESRGAN_repackaged",
+      "hf_revision": "5fd49b7b278836f48af63ecd314d0f98ab336105",
       "allow_patterns": [
-        "RealESRGAN_x4plus.pth"
+        "RealESRGAN_x4plus.safetensors"
       ],
       "weights_external": true,
       "language": "en",
