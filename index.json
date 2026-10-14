@@ -757,10 +757,10 @@
       "type": "pipeline",
       "category": "image",
       "hutash": "pipelines/real-esrgan-x4.hutashm",
-      "sha256": "d92acd8677db9e2b40f30fde8616a581e453ba636f5ea80a0930a1df5e46e23f",
+      "sha256": "a8379d01325be84c29b8550da3a947266d54a536b33ce7740a5a98c2fb42f8d6",
       "name": "Real-ESRGAN x4plus",
       "description": "Enlarge an image 2x or 4x with Real-ESRGAN x4plus, which rebuilds fine detail and texture instead of only smoothing. Runs on a GPU or a CPU.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "license": "BSD-3-Clause",
       "min_vram_gb": 2.0,
       "disk_size_gb": 0.07,
@@ -775,10 +775,10 @@
       ],
       "hardware_label": "CPU",
       "internal": false,
-      "hf_repo": "leonelhs/realesrgan",
-      "hf_revision": "6907f85a9095e201ec4b3c7e91bbb66cdec0f04d",
+      "hf_repo": "Comfy-Org/Real-ESRGAN_repackaged",
+      "hf_revision": "5fd49b7b278836f48af63ecd314d0f98ab336105",
       "allow_patterns": [
-        "RealESRGAN_x4plus.pth"
+        "RealESRGAN_x4plus.safetensors"
       ],
       "weights_external": true,
       "language": "en",
@@ -996,6 +996,52 @@
       ],
       "min_os_version": "1.0.0",
       "min_ram_gb": 1.0
+    },
+    {
+      "id": "yue2-3b",
+      "type": "pipeline",
+      "category": "audio",
+      "hutash": "pipelines/yue2-3b.hutashm",
+      "sha256": "eba24bdadfba1a115e80b1c8bef35fb985b5217a214fd7ad5f84774d94bf4155",
+      "name": "YuE2 3B",
+      "description": "Full songs from lyrics and a style prompt, with vocals and accompaniment. 48 kHz stereo, English and Chinese. Needs a GPU with about 12 GB of VRAM, 24 GB of RAM, and a 7.8 GB download. Licensed CC BY-NC 4.0 (non-commercial).",
+      "version": "1.0.0",
+      "license": "CC-BY-NC-4.0",
+      "min_vram_gb": 12.0,
+      "disk_size_gb": 7.8,
+      "quality_score": 0.7,
+      "speed": null,
+      "modality": "music",
+      "capabilities": [
+        {
+          "id": "music",
+          "modality": "music"
+        }
+      ],
+      "hardware_label": "GPU (12GB+)",
+      "internal": false,
+      "hf_repo": "m-a-p/YuE2-3B",
+      "hf_revision": "8f24312f187763b9854adeec87e437e2b03bbff1",
+      "allow_patterns": [
+        "config.json",
+        "generation_config.json",
+        "yue2_generation_config.json",
+        "weights_manifest.json",
+        "model.safetensors",
+        "qwen.tiktoken",
+        "modeling_yue2.py",
+        "LICENSE",
+        "THIRD_PARTY_NOTICES.md",
+        "licenses/*"
+      ],
+      "weights_external": true,
+      "low_vram_capable": true,
+      "languages": [
+        "zh",
+        "en"
+      ],
+      "min_os_version": "1.0.2",
+      "min_ram_gb": 24.0
     },
     {
       "id": "hivision-idphotos",
