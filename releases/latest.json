@@ -1,11 +1,11 @@
 {
-    "version":  "1.0.8",
-    "notes":  "Release notes here",
-    "pub_date":  "2026-10-12T17:21:49Z",
+    "version":  "1.0.9",
+    "notes":  "Podcast: new Summary and social blurb only option. Translation no longer fails on an empty transcript. Engine: freeing GPU memory no longer unloads models that run on the CPU, and packages with an unrecognised source type now fail with a clear error.",
+    "pub_date":  "2026-11-17T11:13:28Z",
     "platforms":  {
                       "windows-x86_64":  {
-                                             "url":  "https://github.com/Appsork/hutash-registry/releases/download/v1.0.8/Hutash-OS-Setup.exe",
-                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRY3paRnUvZXVJQUJDejRQbVBqR29SQnVuWXRCUHprMlBjWUMvVUJqSTJybHNKMDF5SjMrZHh4U0dtbWRYdlVHZXhGVnpzY1g0ekxvcGJLTE1TcExhL1JkQ1VWcGp0RFFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkxODI1NzA4CWZpbGU6SHV0YXNoIE9TXzEuMC44X3g2NC1zZXR1cC5leGUKT015VG4yd3dyVVMrZVM4V3RRenNacThmUHF1VzdwajBrWlFWcGs3QlpqRHVxTjZ3Q2VNRnMzbTNTQTY5VVdIUVl5NGJDczJpdTRHQS9hWlFuRFRKQnc9PQo="
+                                             "url":  "https://github.com/Appsork/hutash-registry/releases/download/v1.0.9/Hutash-OS-Setup.exe",
+                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRY3paRnUvZXVJQU0zNnNMOVhNcmpHZ1NrOGtySFJjblJIUEViUnQyZWZaQ0xGVEh1R1lKTjRPSk41NU1JdWxqUXZmcGJMakppaHhtb2RvZ1NTc25hc2IzZnd2aEhpZ3dBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0OTE0MDA3CWZpbGU6SHV0YXNoIE9TXzEuMC45X3g2NC1zZXR1cC5leGUKTFVOVXQ2UzFmZHV1ZVBmUG1BYmx1Qm16TEcvcTV6ZGg4aUN5UzErWm41eWk5VXVNUC9yNFlrcWdod0ZkOS9UVUNlMTdJdzJSSG9QeFpYYlUrU3hPRGc9PQo="
                                          }
                   }
 }
