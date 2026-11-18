@@ -293,9 +293,18 @@ vocabulary.
 | `label` | string | — | Field label |
 | `capability` | string | — | Filters to models declaring it (`stt`, `translate`) |
 
-Lists models from the engine, disabling any not installed and marking
-them so. Empty value means "Automatic" — the app resolves a model at run
-time.
+Lists models from the engine, marking any not installed. Empty value
+means "Automatic" — the app resolves a model at run time.
+
+**Choosing a model that is not installed** saves the choice at once (the
+same settings write as any other pick), then asks the shell to install
+it. The control keeps no state of its own (decision D5): it shows the
+saved choice with that model's live state from `useModelState()` —
+installing (progress bar and Cancel), failed (the reason and Retry), or
+"not installed" (Retry). A frame rebuilt mid-install shows the same
+thing. Cancelling the install clears the saved choice; a failure keeps
+it. The chat model (`llm_model`) naming a model that is not installed is
+treated as Automatic by the backend until it is installed.
 
 **Nothing installed for the capability yet**, this becomes one of two
 fallbacks instead of a picker with nothing pickable in it:
@@ -303,8 +312,8 @@ fallbacks instead of a picker with nothing pickable in it:
 - **No model at all declares the capability** — a single "No model
   installed — Install from Marketplace" button, navigating to the Models
   page (there is genuinely nothing to offer inline).
-- **At least one uninstalled model exists** — one row per available
-  model (name + an Install button), install triggered right there. Uses
+- **At least one uninstalled model exists** — the same dropdown, with the
+  uninstalled models as options, install triggered by choosing one. Uses
   the SAME `startInstall`/`installs[id]` shared state the Models page
   renders from (`useModelState()`) — not a second install path, so a run
   started here shows on the Models page too, and vice versa. The install
