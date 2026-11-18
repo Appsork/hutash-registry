@@ -307,7 +307,9 @@ fallbacks instead of a picker with nothing pickable in it:
   model (name + an Install button), install triggered right there. Uses
   the SAME `startInstall`/`installs[id]` shared state the Models page
   renders from (`useModelState()`) — not a second install path, so a run
-  started here shows on the Models page too, and vice versa. A row shows
+  started here shows on the Models page too, and vice versa. The install
+  is asked of the OS shell; outside the shell the row shows the error
+  "Open this app in Hutash OS to install models" and calls nothing. A row shows
   live progress (`InstallState.phase === "installing"`) or an error with
   Retry (`"error"`), the same three phases the Models page's own cards
   use. Falls back to the populated `<select>` automatically the moment
@@ -1147,9 +1149,15 @@ than by the widget — which scale a particular backend publishes on is not
 something a component should have to know.
 
 Filtered to the vertical's `capabilities_needed` and grouped by them.
-Install and remove proxy to the engine and then RE-READ the list: the
-engine owns install state, and a local guess is wrong the moment an
-install fails or another app installs the same model.
+Install, cancel and remove are asked of the OS shell, which asks the
+engine, and the page then RE-READS the list: the engine owns install
+state, and a local guess is wrong the moment an install fails or another
+app installs the same model. **The shell is the only path (decision D4).**
+The page never calls the app's own backend for these. Outside the shell (a
+standalone launch, dev, or a test) the card fails with "Open this app in
+Hutash OS to install models", shown on the card, in the Settings row and in
+the page's error banner, and nothing is sent anywhere. Reads (the model
+list, install state and progress) still come from the app's backend.
 
 **The install lifecycle is Studio's, step for step.** An install is
 ASYNCHRONOUS — `POST /packages/{id}/install` returns 202 the moment the
