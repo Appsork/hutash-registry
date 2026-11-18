@@ -600,6 +600,26 @@ capability list, drifting the first time a workflow was renamed. So the
 widget sends facts and `POST /hanu/chat` turns them into
 instructions.
 
+**It knows the app's screens from `vertical.yaml`.** The backend builds a guide
+from the same file the page renderer reads (`app_guide.py`): each page's title,
+the tabs, button and field labels and export formats inside it, the settings
+labels, and each workflow's name and description if it has one. It is generated,
+never hand-copied per app, and capped at about 3000 characters (page titles, tab
+names, buttons and formats are kept first). So "how do I export as video" is
+answered from the Export tab's real formats, not guessed. What the YAML cannot
+say (what a screen is for, how a workflow behaves) goes in an optional
+`assistant.notes` string, appended to the guide and cut to 1000 characters:
+
+```yaml
+assistant:
+  notes: >
+    Export is in the editor's Export tab. Video with subtitles is MP4.
+```
+
+The reply never shows `Name:`-style field lines (they are dropped server-side),
+and an action button is offered only when the user asks to DO something a
+listed workflow does.
+
 **The action button is the point.** An assistant that can only say "you
 could translate those subtitles" has moved the work, not done it. When
 the model names a workflow the app really has, the reply renders a button
