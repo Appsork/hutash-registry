@@ -598,17 +598,21 @@ workflow the app does NOT have is dropped server-side rather than
 rendered: a button that cannot work is worse than no button, because it
 looks like a feature.
 
-Remembers the conversation for the SESSION, not across one. Every send
-also ships the last `HANU_HISTORY_LIMIT` (12) messages as `history`,
+Remembers the conversation for the SESSION, not across one, and keeps it
+across page changes. The messages, the draft and the in-flight flag live
+in `HanuSessionProvider` (`contexts/hanuSession.tsx`), mounted by
+`VerticalApp` above both the page tree and the overlay, so closing the
+panel or opening another page loses nothing. A **New chat** button in the
+panel clears it (and drops a reply still in flight for the old chat).
+Every send also ships the last `HANU_HISTORY_LIMIT` (12) messages as `history`,
 which the backend folds into the system prompt so a follow-up like "make
 it shorter" has an antecedent for "it" — see `hanu.tsx` and
 `hanu.py`'s `build_system_prompt` for the bounded window and why it
 stays bounded (the underlying capability is one `prompt`/`system` pair,
 not a message array, so remembering means re-stating recent turns as
 text on every call). Nothing is written to disk or to the project:
-`messages` starts at `[]` again on a reload, same as before this
-existed. This is a deliberate difference from Studio's own Hanu, which
-is still memory-less. A failed turn is reported BESIDE the transcript,
+`messages` starts at `[]` again on a reload. This is a deliberate
+difference from Studio's own assistant, which keeps its own chats. A failed turn is reported BESIDE the transcript,
 never inside it — the model did not say it, and a transcript is a record
 of what was said.
 
@@ -623,9 +627,24 @@ of what was said.
       position: main
 ```
 
-An overlay, in every vertical that has it: the assistant answers about
-the work in front of you, so leaving that work to ask would be exactly
-backwards — and an overlay never unmounts the editor or loses an edit.
+**The kit decides the presentation; the yaml above only opts in** and is
+unchanged (rail item to `hanu`, page with `overlay: true`). The kit finds
+the page by its widget, not its id: a page that holds a `hanu_panel` is
+Hanu's (`isHanuPage` in `hanuDock.tsx`).
+
+- **Wide window (60rem and up): docked.** A panel on the right edge of
+  the app frame, `--hanu-dock-width` (24rem) wide, beside the page, which
+  narrows to make room. Nothing is covered and there is no backdrop. The
+  rail item toggles it, its header has a close button, and Escape does
+  not close it. Open or closed is remembered per app in `localStorage`
+  (every access guarded; without storage it simply is not remembered).
+  Opening another page leaves it open.
+- **Narrow window (below 60rem): the overlay,** as before, so the page is
+  not squeezed. The conversation is the same one either way.
+
+An overlay never unmounts the editor or loses an edit, and neither does
+the dock: the assistant answers about the work in front of you, so
+leaving that work to ask would be exactly backwards.
 
 ### `media_meta`
 
