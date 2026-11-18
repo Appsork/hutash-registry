@@ -659,15 +659,27 @@ of what was said.
 ```
 
 **The kit decides the presentation; the yaml above only opts in** and is
-unchanged (rail item to `hanu`, page with `overlay: true`). The kit finds
-the page by its widget, not its id: a page that holds a `hanu_panel` is
-Hanu's (`isHanuPage` in `hanuDock.tsx`).
+unchanged (page with `overlay: true`; a rail item to `hanu` may still be
+listed and is simply not drawn, see below). The kit finds the page by its
+widget, not its id: a page that holds a `hanu_panel` is Hanu's
+(`isHanuPage` in `hanuDock.tsx`).
+
+**The toggle is in the header, not the rail.** When the app has a Hanu page
+the kit draws an icon button at the RIGHT END of the app header (the bar
+with the app and project name): tooltip `Hanu (Ctrl+Shift+H)`, `aria-pressed`
+while open, `aria-keyshortcuts="Control+Shift+H"`. The same chord toggles it
+from anywhere in the window (Cmd+Shift+H on a Mac); no other chord is bound
+anywhere in the kit or the shell. The page's rail item and its header page
+button are left out, because a rail is for pages and Hanu is a panel beside
+one; a `vertical.yaml` that still lists the item keeps working with one
+control instead of two. An app with no Hanu page gets no toggle and no
+shortcut.
 
 - **Wide window (60rem and up): docked.** A panel on the right edge of
   the app frame, `--hanu-dock-width` (24rem) wide, beside the page, which
   narrows to make room. Nothing is covered and there is no backdrop. The
-  rail item toggles it, its header has a close button, and Escape does
-  not close it. Open or closed is remembered per app in `localStorage`
+  header toggle opens and closes it, its own header has a close button,
+  and Escape does not close it. Open or closed is remembered per app in `localStorage`
   (every access guarded; without storage it simply is not remembered).
   Opening another page leaves it open.
 - **Narrow window (below 60rem): the overlay,** as before, so the page is
@@ -676,6 +688,24 @@ Hanu's (`isHanuPage` in `hanuDock.tsx`).
 An overlay never unmounts the editor or loses an edit, and neither does
 the dock: the assistant answers about the work in front of you, so
 leaving that work to ask would be exactly backwards.
+
+### The right-hand dock (dock host)
+
+Not a widget a vertical declares: the kit's one slot at the right edge of
+the app frame, `dockHost.tsx`. The frame is **[navigation rail] [page] [one
+right dock]**; an app adds no side panel outside the page. Hanu is the only
+tenant today and registers through the same API a future panel would:
+
+```tsx
+useRegisterDockPanel({ id, title, open, onClose, render })   // null = no entry
+```
+
+`open` and `onClose` belong to the panel (Hanu persists its own per app);
+the host decides what is drawn from the OPEN panels. **One open panel shows
+its own header (title, close) and no tab strip; two or more show one tab
+strip** with the active panel's body below it. Give `onClose` and `render`
+stable identities (`useCallback`). The body is drawn where the slot sits,
+inside the media, autosave and session providers its widgets read.
 
 ### `media_meta`
 
