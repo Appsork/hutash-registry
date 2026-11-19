@@ -1142,6 +1142,23 @@ app and 50rem in another.
 | Prop | Type | Default | Meaning |
 |---|---|---|---|
 | `capability_labels` | object | `{}` | Human name per capability id |
+| `show_all` | boolean | `true` | Offer the "Show all models" switch. `false` leaves it out |
+| `show_all_label` | string | `Show all models` | The switch's label |
+
+**"Show all models" widens the view, never the app.** The switch is a
+`toggle` (a yes/no), off by default and off again on every fresh load: it
+is a view, not a setting, and nothing is saved. On, the page also lists a
+group for every other capability the catalogue declares, after the app's
+own groups (`GET /models?all=true`). A model installed from one of those
+groups is installed through the shell like any other (D4); it does NOT make
+this app a user of it. The app uses a model only if one is picked for it in
+Settings, and a pinned model that is later removed falls back inside the
+app's own scope, then to Automatic.
+
+**An app with no Models page at all** says so in `vertical.yaml` with
+`generated_pages: {models: false}` (and `settings: false` for Settings).
+Absent, or `true`, is the behaviour every app already has. The key is NOT
+`pages:`, which is the list of pages the vertical declares.
 
 **A picker's capability is a section too.** `GET /models` serves a group for
 each capability `capabilities_needed` declares AND each capability a

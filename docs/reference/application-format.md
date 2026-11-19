@@ -71,12 +71,18 @@ error signal from a malformed vertical.yaml; there isn't one.**
 |---|---|---|---|
 | `app` | vertical_config.py:159 | no | `{}` |
 | `pages` | vertical_config.py:163 | no | — (renderer falls back to the legacy `layout:` key if `pages` is absent) |
+| `generated_pages` | vertical_config.py (`get_vertical_config`) | no | `{}` |
 | `workflows` | vertical_config.py:41,168 | no | `[]` |
 | `layout` | vertical_config.py:169 | no | `{}` (legacy, pre-`pages` single-workspace shape) |
 | `settings` | vertical_config.py:187 | no | `{}` |
 | `project` | vertical_config.py:62,104,140 | no | see below |
 | `setup` | vertical_config.py:195-228 | no | `{}` |
 | `ui_overrides` | vertical_config.py:191 | no | `{}` — legacy, superseded by widget-level `customWidgets` |
+
+`generated_pages`: `{models?: boolean, settings?: boolean}`. `models: false`
+or `settings: false` leaves that GENERATED page out of the app altogether
+(`withGeneratedPages`); absent or `true` is what every app already has. It
+is not `pages:`, which lists the pages the vertical declares itself.
 
 `app`: `{title?: string, description?: string}` — the OS shell's app
 chrome (window/tab title, subtitle). Nothing else reads it.
@@ -466,7 +472,8 @@ a checked invariant.
 ```
 `models_page` and `hanu_panel` are each a single widget filling the
 whole page — `capability_labels` on the former is the only thing this
-vertical customizes; the widget itself sources the actual marketplace
+vertical customizes (`show_all: false` removes its "Show all models"
+switch, `show_all_label` renames it); the widget itself sources the actual marketplace
 data. `hanu_panel` takes no props at all — Hanu reads the open
 project, the visible transcript, and the current page from context
 server-side rather than being told anything here.
