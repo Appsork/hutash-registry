@@ -84,6 +84,11 @@ or `settings: false` leaves that GENERATED page out of the app altogether
 (`withGeneratedPages`); absent or `true` is what every app already has. It
 is not `pages:`, which lists the pages the vertical declares itself.
 
+`settings`: merged over a generated base, one `model_selector` per
+capability in the manifest's `capabilities_needed`, keyed `<capability>_model`.
+A key declared here is used as written (replaced whole); an undeclared one is
+generated. See `REGISTRY.md` → `settings_page`.
+
 `app`: `{title?: string, description?: string}` — the OS shell's app
 chrome (window/tab title, subtitle). Nothing else reads it.
 
