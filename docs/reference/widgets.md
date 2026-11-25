@@ -1196,7 +1196,10 @@ The card reads these from `GET /models`:
 engine's catalogue relays it. For a capability chosen by language (`stt`,
 `translate`, `tts`, `voice-clone`) the card is titled "Hindi Translation" or
 "English Transcription" (`modelTitle` in `src/languages.ts`), with the model's
-own name beneath; the meta row adds "English → Hindi". A model declaring no
+own name beneath. Which capabilities are chosen by language, and each one's noun,
+come from the `capability_labels` block `GET /vertical` serves from the capability
+catalogue (`hutash_workflow/capabilities.json`); the kit holds no list, and a
+capability the block omits shows as its id; the meta row adds "English → Hindi". A model declaring no
 languages, or a capability not chosen by language (chat, image), keeps its
 name as the title.
 
