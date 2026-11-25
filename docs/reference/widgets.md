@@ -1408,6 +1408,19 @@ Each field in the `settings:` schema declares a `type`: `model_selector`,
 `dropdown`, `folder_picker`, `toggle`, or a plain text input (the default
 for anything else).
 
+**The schema starts from a generated base.** `GET /vertical` serves the
+vertical's own `settings:` merged over one `model_selector` per capability in
+`capabilities_needed` (`hutash_workflow/settings_base.py`), keyed
+`<capability>_model` with hyphens as underscores: the keys Subs, Podcast and
+Dub already store under, so no stored value moves. A key the vertical declares
+is used exactly as declared (replaced whole, so a picker with no description
+stays without one); a key it does not declare gets the generated label and
+description. Order is the manifest's capabilities first, then the vertical's
+own other keys. `validate` warns (`settings.redundant-picker`, never an error)
+when a vertical repeats a generated picker word for word. The common base
+holds generated model pickers only; formats, folders and toggles stay the
+vertical's own.
+
 - **`toggle`** — a checkbox bound to a boolean settings key. On its own it
   is just a yes/no setting; paired with `reveal_when` on another field it
   gates that field's visibility, mirroring hutash-studio's Settings →
