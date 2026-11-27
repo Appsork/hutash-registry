@@ -320,15 +320,9 @@ capability name for you — which is why the names are fixed in one list.
 
 ## Testing loop — build, load, call, verify, without the UI
 
-> **Known gap (2026-11-27):** Developer Mode's loader (`dev_stage()` in
-> hutash-os) still expects the older nested layout (`application/api/main.py`
-> written by hand). The template's current layout (no `api/`; the framework
-> generates it) is not loadable that way yet. Until `dev_stage()` is moved
-> to the shipped layout, test a new app with its own `pytest` run, a
-> standalone start (`python -m hutash_workflow.server.vertical`), and
-> `scripts/stage-verticals.ps1` + `validate_package.py --strict` as the
-> template's `README.md` lists. The endpoints below are accurate for an app
-> in the older layout.
+> Developer Mode loads both layouts: the older nested one (`application/api/main.py` written
+> by hand) and the template's current one (no `api/`; the framework generates it and shows
+> your workflows). The endpoints below apply to either.
 
 Turning on Developer Mode in Hutash OS Settings and using its "Load
 Application" picker on your app folder directly is the human way — no
