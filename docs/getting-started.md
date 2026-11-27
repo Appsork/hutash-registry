@@ -1,8 +1,12 @@
 # Getting started — modifying `template-app/` into your own app
 
 This is a **modification guide**, not a build-from-scratch tutorial.
-`AGENTS.md`'s own first instruction is: copy `template-app/` into
-`apps/<your-app-name>/`, then edit it. This doc explains what each file
+`AGENTS.md`'s own first instruction is: copy `template-app/` and edit
+it. **`template-app/` lives in hutash-os, not in this repo:**
+`hutash-os-files/hutash-os/docs/reference/template-app/` (also bundled
+into the developer workspace as `developer/template-app/`). Its
+`README.md` has the numbered steps; this doc explains what each file
+does. This doc explains what each file
 in that template does and how to change it — walking through one real
 modification (turning it into a translator) so you can see the pattern
 before you apply it to your own idea.
@@ -22,21 +26,25 @@ ships.
 
 ```
 template-app/
-├── manifest.yaml
+├── manifest.yaml                 you write
+├── requirements.txt              copy (pinned)
+├── README.md                     the exact steps
+├── conftest.py, pytest.ini, .gitignore
 ├── resources/
-│   └── icon.svg
+│   └── icon.svg                  replace the picture
+├── tests/
+│   └── test_vertical_contract.py copy, add your own checks
 └── application/
-    ├── config.yaml
-    ├── packages.yaml
-    ├── requirements.txt
-    ├── vertical.yaml
-    ├── api/
-    │   ├── __init__.py
-    │   ├── _bootstrap.py
-    │   └── main.py
+    ├── config.yaml               copy
+    ├── packages.yaml             copy
+    ├── vertical.yaml             you write
     └── workflows/
-        └── transcribe.yaml
+        └── transcribe.yaml       you write
 ```
+
+There is no `api/` and no `cli_entry.py`: the framework builds the backend
+and the command line from `manifest.yaml` and `vertical.yaml`, and staging
+writes the entry files into the package.
 
 ## The files, one by one
 
@@ -194,76 +202,23 @@ most of your actual idea lives in. Full step-type reference (`ffmpeg`,
 `formatter`, `file_read`/`file_write`, a nested sub-`workflow`, beyond
 just `capability`): `reference/application-format.md` §2.
 
-### `application/config.yaml`, `application/packages.yaml`, `application/requirements.txt` — usually untouched
+### `application/config.yaml`, `application/packages.yaml`, `requirements.txt` — usually untouched
 
-These three declare how the engine launches your app and what Python
-packages it needs. Loaded through Developer Mode, `dev_stage()`
-(`hutash-os/api/services/dev_packages.py`) overwrites `config.yaml`'s
-`entrypoint`/`ports`/`health`/`managed` and tops up
-`requirements.txt`'s floor dependencies automatically, so **you don't
-need to touch any of these three files unless your app needs a package
-beyond `create_app` itself** (add it to `requirements.txt` — never
-remove the six already there) or a custom `env` var in `config.yaml`.
+These declare how the engine launches your app and what Python packages it
+needs. `requirements.txt` sits at the repo root with pinned versions; add a
+package to it only if your app needs one beyond the shared backend's own
+(never remove the six already there). `config.yaml` is a copy: `port: 0`
+means the engine assigns the port.
 
-### `application/api/main.py` — usually untouched
+### The backend — there is nothing to write
 
-```python
-# application/api/main.py
-from pathlib import Path
-
-import api._bootstrap  # noqa: F401  — puts the OS packages on sys.path
-
-from hutash_workflow.server import create_app
-from hutash_workflow.server.config import VerticalSpec, configure
-from hutash_workflow.server.workflow_source import declared_settings
-
-_ROOT = Path(__file__).resolve().parent.parent
-_VERTICAL_YAML = "vertical.yaml"
-
-SPEC = VerticalSpec(
-    app_id="hutash-template",
-    title="Hutash Template",
-    version="1.0.0",
-    root=_ROOT,
-    vertical_yaml=_VERTICAL_YAML,
-    workflows_dir="workflows",
-    projects_folder="Hutash Template",
-    projects_env="HUTASH_TEMPLATE_PROJECTS_DIR",
-    default_settings=declared_settings(_ROOT / _VERTICAL_YAML),
-)
-configure(SPEC)
-
-app = create_app(spec=SPEC)
-```
-
-Two calls — `configure` and `create_app` — and nothing else, because
-`create_app()` provides everything else your app needs (project
-management, workflow execution, Settings, the Models page, Hanu, auth,
-static hosting) without you declaring it. `default_settings=
-declared_settings(...)` is why `${settings.stt_model}` in the workflow
-above actually resolves: `declared_settings()` reads `vertical.yaml`'s
-`settings:` block straight into the runtime values dict, so **every
-setting you add to `vertical.yaml` is automatically resolvable — you
-never edit this file just because you added a setting.**
-
-**Change `app_id`/`title`/`projects_folder`/`projects_env`** to match
-your app (keep `projects_env` unique — it's the environment variable a
-user can set to relocate their projects folder). **Edit the rest of this
-file only if you need a custom output format** (an ASS subtitle
-document, a non-standard export) — `register_format`, imported from
-`hutash_workflow.steps.formatter_step` specifically (not top-level
-`hutash_workflow`), registers one; see `reference/patterns.md`'s "custom
-output format" technique for the full pattern. Everything about *why*
-`root` is computed this exact way (two `.parent` hops, not three) is in
-this file's own comments — read them before changing it, since getting
-it wrong doesn't fail cleanly (see that comment for what actually
-breaks).
-
-### `application/api/_bootstrap.py` — never touched
-
-Puts `hutash_workflow`/`hutash_vertical_ui` on the import path. Copy it
-verbatim into any new app — it needs no changes per app, and
-`dev_stage()` writes it automatically if you delete it.
+`create_app(root=...)` reads `manifest.yaml` and `application/vertical.yaml`
+and builds the whole backend; the framework's templates
+(`hutash_workflow/entry_files/` in hutash-os) provide `api/main.py` and
+`api/_bootstrap.py`, which staging copies into the package. A vertical that
+needs a custom route or output format is the exception and keeps its own
+`api/` with a spec; see `reference/patterns.md`'s "custom output format"
+technique and hutash-os `docs/reference/create-vertical.md` §4.
 
 ## Worked example: turning the template into a translator
 
@@ -294,9 +249,8 @@ language, get translated text back. Same shape, different capability.
    result.
 4. **`application/vertical.yaml`**'s `workflows:` list: point at
    `workflows/translate.yaml` with the new id.
-5. **`application/api/main.py`**: only `app_id`/`title`/
-   `projects_folder`/`projects_env` change — nothing else, since there's
-   still no custom output format.
+5. **Nothing else.** The app id, title and version are read from
+   `manifest.yaml`; there is no Python file to edit.
 
 An image generator follows the identical pattern: `capability: image`, a
 `text_input` for the prompt (`params: {prompt: ...}`), an `image_display`
@@ -365,6 +319,16 @@ capability name for you — which is why the names are fixed in one list.
   `filter_by`/`describe_by` on a dropdown, ...): `reference/application-format.md` §1.
 
 ## Testing loop — build, load, call, verify, without the UI
+
+> **Known gap (2026-11-27):** Developer Mode's loader (`dev_stage()` in
+> hutash-os) still expects the older nested layout (`application/api/main.py`
+> written by hand). The template's current layout (no `api/`; the framework
+> generates it) is not loadable that way yet. Until `dev_stage()` is moved
+> to the shipped layout, test a new app with its own `pytest` run, a
+> standalone start (`python -m hutash_workflow.server.vertical`), and
+> `scripts/stage-verticals.ps1` + `validate_package.py --strict` as the
+> template's `README.md` lists. The endpoints below are accurate for an app
+> in the older layout.
 
 Turning on Developer Mode in Hutash OS Settings and using its "Load
 Application" picker on your app folder directly is the human way — no
