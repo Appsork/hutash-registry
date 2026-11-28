@@ -1040,10 +1040,10 @@
       "type": "application",
       "category": "Audio Tools",
       "hutash": "apps/hutash-podcast.hutash",
-      "sha256": "375cb017ac496427833fa3d7131fd18d14aa649d0a331a2ce2b59471f8a72f1f",
+      "sha256": "7f12183cb483b14cc98698b636169669e12c02b7293776b2f306e2f58cd34b2d",
       "name": "Hutash Podcast (Beta)",
       "description": "Turn podcast episodes into transcripts, show notes, and chapters",
-      "version": "1.0.5",
+      "version": "1.0.4",
       "license": "MIT",
       "min_vram_gb": 0,
       "disk_size_gb": null,
@@ -1057,7 +1057,7 @@
       "hf_revision": null,
       "allow_patterns": null,
       "weights_external": false,
-      "min_os_version": "1.0.12",
+      "min_os_version": "1.0.11",
       "requires": {
         "kit": 1,
         "widgets": [
